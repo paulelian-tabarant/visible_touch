@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { Button, Icon } from 'semantic-ui-react';
 
 class App extends Component {
   render() {
@@ -13,6 +14,10 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
+        <Button icon>
+          <Icon name = 'lightbulb' />
+          Frame Editor
+        </Button>
       </div>
     );
   }
