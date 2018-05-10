@@ -1,5 +1,0 @@
-{
-    "sketch": "ColorPalette.ino",
-    "board": "arduino:avr:megaADK",
-    "port": "/dev/ttyACM0"
-}
