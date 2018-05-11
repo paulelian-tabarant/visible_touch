@@ -32,7 +32,7 @@ var randData = [];
 setRandomLedData();
 
 function setRandomLedData(){
-    for(var i=0;i<30;i++){
+    for(var i=0;i<33;i++){
         randData[i] = Math.floor(Math.random()*256);
     }
 }

@@ -6,8 +6,10 @@
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
 CRGB leds[NUM_LEDS];
+CRGB ledData[500];
+int nextLed;
 int counter;
-bool changed;
+int dataLength;
 
 void setup() {
     delay( 3000 ); // power-up safety delay
@@ -21,30 +23,33 @@ void setup() {
     }
     
     counter=0;
-    changed=true;
 }
 
 
 void loop()
 {
-    if(changed){
-      FastLED.show();
-      changed=false;
+    for(int i=0; i<NUM_LEDS; i++){
+        leds[i] = ledData[nextLed];
+        nextLed = (nextLed+1)%dataLength;
     }
+    FastLED.show();
+    delay(250);
 }
 
 void serialEvent(){
+    counter = 0;
     while(Serial.available()){
         if(counter%3==0){
-            leds[counter/3].r = Serial.read();
+            ledData[counter/3].r = Serial.read();
         }else if(counter%3==1){
-            leds[counter/3].g = Serial.read();          
+            ledData[counter/3].g = Serial.read();          
         }else{
-            leds[counter/3].b = Serial.read();          
+            ledData[counter/3].b = Serial.read();          
         }
-        counter = (counter+1)%(NUM_LEDS*3);
-        changed = true;
-        Serial.write("Data received");
+        counter++;
     }
+    dataLength = counter/3;
+    nextLed = 0;
+    Serial.write("Data received");
 }
 
