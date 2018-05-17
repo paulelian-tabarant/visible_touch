@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 
-class GridComponent extends Component {
+class GridElement extends Component {
   render() {
-    const color = 
     return (
-      <div style = {color}> 
+      <div
+        className="grid-element"
+        style={this.props.colorStyle}>
       </div>
     )
-  }
+  };
 }
+
+export default GridElement;

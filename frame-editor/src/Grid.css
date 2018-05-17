@@ -1,0 +1,9 @@
+.grid-element {
+  position: relative;
+  height: 5vh;
+  width: 100%;
+}
+
+.grid-column {
+  padding: 0px!important;
+}
