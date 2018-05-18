@@ -12,24 +12,44 @@ function getRandomColor() {
   return color;
 }
 
-const colors = [
-  'red', 'orange', 'yellow', 'olive', 'green', 'teal', 'blue',
-  'violet', 'purple', 'pink', 'brown', 'grey', 'black',
-];
-
-const colorsStyle = colors.map(color => (
-  {
-    backgroundColor: getRandomColor(),
-  }
-));
+const colorsStyle = Array.apply(null, {length: 35})
+  .map(color => ({backgroundColor: getRandomColor()}));
 
 class GridComponent extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      mouseDown: false,
+    }
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+  }
+
+  handleMouseDown() {
+    this.setState({
+      mouseDown: true
+    });
+  }
+
+  handleMouseUp() {
+    this.setState ({
+      mouseDown: false
+    });
+  }
+
   render() {
     return (
-      <Grid columns={5} className="grid-component">
+      <Grid
+        columns={5}
+        className="grid-component"
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}>
         {colorsStyle.map((colorStyle, i) => (
           <Grid.Column className="grid-column" key={i}>
-            <GridElement colorStyle={colorStyle} key={i}/>
+            <GridElement 
+              colorStyle={colorStyle}
+              color={this.props.color}
+              mouseDown={this.state.mouseDown}/>
           </Grid.Column>
         ))}
       </Grid>

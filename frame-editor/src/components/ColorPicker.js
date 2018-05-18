@@ -4,15 +4,13 @@ import reactCSS from 'reactcss';
 import '../ColorPicker.css';
 
 class ColorPicker extends React.Component {
-  state = {
-    displayColorPicker: false,
-    color: {
-      r: '241',
-      g: '112',
-      b: '19',
-      a: '1',
-    },
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      displayColorPicker: false,
+      color: props.color
+    };
+  }
 
   handleClick = () => {
     this.setState({ displayColorPicker: !this.state.displayColorPicker })
@@ -20,10 +18,11 @@ class ColorPicker extends React.Component {
 
   handleClose = () => {
     this.setState({ displayColorPicker: false })
+    this.props.changeCurrentColor(this.state.color);
   };
-
+  
   handleChange = (color) => {
-    this.setState({ color: color.rgb })
+    this.setState({ color: color.rgb });
   };
 
   render() {
