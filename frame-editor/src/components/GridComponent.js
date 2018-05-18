@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Grid } from 'semantic-ui-react';
+import '../Grid.css';
 import GridElement from './GridElement';
-import './Grid.css';
 
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
@@ -26,10 +26,10 @@ const colorsStyle = colors.map(color => (
 class GridComponent extends Component {
   render() {
     return (
-      <Grid columns={5}>
+      <Grid columns={5} className="grid-component">
         {colorsStyle.map((colorStyle, i) => (
           <Grid.Column className="grid-column" key={i}>
-            <GridElement colorStyle={colorStyle} />
+            <GridElement colorStyle={colorStyle} key={i}/>
           </Grid.Column>
         ))}
       </Grid>

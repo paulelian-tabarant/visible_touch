@@ -7,3 +7,7 @@
 .grid-column {
   padding: 0px!important;
 }
+
+.grid-component {
+  margin: 2vh 2vw!important;
+}
