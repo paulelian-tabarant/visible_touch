@@ -6,11 +6,11 @@ class GridElement extends Component {
     this.state = {
       colorStyle: props.colorStyle
     };
-    this.handleClick = this.handleClick.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
   }
 
-  handleClick() {
+  handleMouseDown() {
     this.setState({
       colorStyle: {
         backgroundColor: 
@@ -23,7 +23,7 @@ class GridElement extends Component {
   }
 
   handleMouseEnter() {
-    if (this.props.mouseDown) this.handleClick();
+    if (this.props.mouseDown) this.handleMouseDown();
   }
 
   render() {
@@ -32,7 +32,7 @@ class GridElement extends Component {
       <div
         className="grid-element"
         style={colorStyle}
-        onClick={this.handleClick}
+        onMouseDown={this.handleMouseDown}
         onMouseEnter={this.handleMouseEnter}>
       </div>
     )
