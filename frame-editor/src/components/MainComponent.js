@@ -50,12 +50,12 @@ class MainComponent extends Component {
           color={this.state.color}
           changeCurrentColor={this.changeCurrentColor}/>
         <Divider />
-        <GridComponent
-          color={this.state.color}
-          layout={this.state.layout}/>
         <PixelGrid
           color={this.state.color}
           layout={this.state.layout}/>
+        {/* <GridComponent
+          color={this.state.color}
+          layout={this.state.layout}/> */}
       </div>
     );
   }

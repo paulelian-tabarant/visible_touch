@@ -38,7 +38,7 @@ class LayoutSliders extends Component {
       <div className="slider-group">
         <Slider
           min={1}
-          max={30}
+          max={50}
           value={layout.vertical}
           orientation="horizontal"
           onChange={this.handleOnChangeVertical}
@@ -46,7 +46,7 @@ class LayoutSliders extends Component {
         <div className="value">Number of rows: {layout.vertical}</div>
         <Slider
           min={1}
-          max={16}
+          max={50}
           value={layout.horizontal}
           orientation="horizontal"
           onChange={this.handleOnChangeHorizontal}
