@@ -1,6 +1,7 @@
 import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
 import { Button, Divider } from 'semantic-ui-react';
+import axios from 'axios';
 
 
 function generateGrid(layout) {
@@ -23,6 +24,8 @@ class PixelGrid extends Component {
     this.state = {
       cellsArray: cellsArray,
       current: props.current,
+      sent: false,
+      loading: false,
     };
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
@@ -77,16 +80,49 @@ class PixelGrid extends Component {
   }
 
   handleSend() {
-    console.log(this.state);
+    this.setState({
+      loading: true,
+    });
+    var data = this.state.cellsArray
+      .map(cells =>
+        cells.map(cell => cell.color.split(/,|\(/).slice(1,4).join()).join()
+      ).join();
+    data = data.split(',');
+    const dataObject = {
+      data: data.map(str => parseInt(str, 10))
+    };
+    axios.request({
+      method: 'post',
+      url: 'http://localhost:8000',
+      data: dataObject,
+      params: {
+        headers: {'content-type': 'application/x-www-form-urlencoded'}
+      }
+    }).then(res => {
+      console.log(res);
+      console.log(res.data);
+      this.setState({
+        loading: false,
+        sent: true,
+      });
+      setTimeout(() => {
+        this.setState({
+          sent: false,
+        })
+      }, 3000);
+    });
   }
 
   changeCurrentFrame(current) {
     this.setState({
-      current: current
+      current: current,
     });
   }
 
   render() {
+    const sent = this.state.sent;
+    const loading = this.state.loading;
+    const visible = sent || loading;
     return (
       <div>
         <Button content="New" icon="file outline" color="green"
@@ -95,6 +131,8 @@ class PixelGrid extends Component {
           onClick={this.handleClearCurrentFrame}/>
         <Button content="Send To Arduino" icon="send" color="blue"
           onClick={this.handleSend}/>
+        {visible && 
+          <Button loading={loading} content="Sent" color="pink" icon="checkmark" />}
         <Divider />
         <Grid
           cells={this.state.cellsArray[this.state.current-1]}

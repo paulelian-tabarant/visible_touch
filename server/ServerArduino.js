@@ -1,7 +1,7 @@
 var SerialPort = require('serialport'); // include the serialport library
 var http = require('http');
 
-var myPort = new SerialPort("COM4", {
+var myPort = new SerialPort("/dev/ttyACM0", {
   baudRate: 9600,
   dataBits: 8,
   parity: 'none',
@@ -51,6 +51,8 @@ function sendDataToArduino(data) {
 }
 
 var serv = http.createServer((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', '*');
   res.writeHead(200, {'Content-Type': 'application/json'});
   if (req.method === 'POST') {
     let body = '';
@@ -64,5 +66,8 @@ var serv = http.createServer((req, res) => {
       res.write(JSON.stringify(obj));
       res.end('ok');
     });
+  }
+  else {
+    res.end();
   }
 }).listen(8000);
