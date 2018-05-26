@@ -1,6 +1,5 @@
 var SerialPort = require('serialport'); // include the serialport library
 var http = require('http');
-const qs = require('querystring');
 
 var myPort = new SerialPort("COM4", {
   baudRate: 9600,
@@ -33,7 +32,7 @@ function writeData() {
   console.log("---------");
   if (shouldWrite) {
     myPort.write("-1 ");
-    for (var i = 0; i < 180; i++) {
+    for (var i = 0; i < dataToWrite.length; i++) {
       myPort.write(dataToWrite[i].toString());
       myPort.write(" ");
     }
@@ -59,7 +58,10 @@ var serv = http.createServer((req, res) => {
       body += chunk.toString(); // convert Buffer to string
     });
     req.on('end', () => {
-      res.write(JSON.stringify(qs.parse(body)));
+      obj = JSON.parse(body);
+      dataToWrite = obj.data;
+      startWriting();
+      res.write(JSON.stringify(obj));
       res.end('ok');
     });
   }
