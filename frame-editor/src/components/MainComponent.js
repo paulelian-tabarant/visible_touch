@@ -17,7 +17,7 @@ class MainComponent extends Component {
         a: 1,
       },
       layout: {
-        vertical: 5,
+        vertical: 1,
         horizontal: 10,
       }
     }

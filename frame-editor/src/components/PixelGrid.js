@@ -1,5 +1,6 @@
 import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
+import { Button, Divider } from 'semantic-ui-react';
 
 
 function generateGrid(layout) {
@@ -22,6 +23,7 @@ class PixelGrid extends Component {
       cells: generateGrid(props.layout)
     };
     this.updatePixel = this.updatePixel.bind(this);
+    this.handleClear = this.handleClear.bind(this);
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -51,12 +53,24 @@ class PixelGrid extends Component {
       cells
     }))
   }
+
+  handleClear() {
+    this.setState({
+      cells: generateGrid(this.props.layout),
+    });
+  }
+
   render() {
     return (
-      <Grid
-        cells={this.state.cells}
-        onCellEvent={this.updatePixel}
-      />
+      <div>
+        <Button content="Clear" icon="close" onClick={this.handleClear}/>
+        <Button content="Send" icon="send" onClick={this.handleSend}/>
+        <Divider />
+        <Grid
+          cells={this.state.cells}
+          onCellEvent={this.updatePixel}
+        />
+      </div>
     )
   }
 }
