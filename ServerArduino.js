@@ -1,39 +1,52 @@
 var SerialPort = require('serialport'); // include the serialport library
 
-function sendLedData(ledData){
+var myPort = new SerialPort("COM4", 
+    {baudRate: 9600,
+    dataBits: 8, 
+    parity: 'none', 
+    stopBits: 1, 
+    flowControl: false});// open the port
+myPort.on('open', openPort); // called when the serial port opens
+var ready = false;
+console.log("blabla");
 
-    var myPort = new SerialPort("COM4", {baudRate: 9600});// open the port
-    myPort.on('open', openPort); // called when the serial port opens
-    
-    function openPort() {
-        var brightness = 0; // the brightness to send for the LED
-        console.log('port open');
-        //console.log('baud rate: ' + myPort.options.baudRate);
-    
-        // since you only send data when the port is open, this function
-        // is local to the openPort() function:
-        function sendData() {
-            myPort.write(ledData);
-        }
+var shouldWrite = false;
+var dataToWrite;
+
+function openPort() {
+    ready = true;
+    console.log('port open');
+    //console.log('baud rate: ' + myPort.options.baudRate);
         
-        myPort.on('data', function(data) {
-            console.log("data sent!");
-            myPort.close();
-            clearInterval(sendInterval);
-        });
+    myPort.on('data', function(data) {
+        console.log(data.toString());   
+        shouldWrite = false;
+    });
 
-        // set an interval to update the brightness 2 times per second:
-        var sendInterval = setInterval(sendData,5000);
+    writeInterval = setInterval(writeData,1000);
+}
+
+setDataRGBYCM();
+
+
+function writeData(){
+    console.log("---------");
+    if(shouldWrite){
+        myPort.write("-1 ");
+        for(var i=0; i<180; i++){
+            myPort.write(dataToWrite[i].toString());
+            myPort.write(" ");
+        }
+        myPort.write("-2 ");
+        myPort.write(dataToWrite.length.toString()+" ");
     }
 }
 
-var randData = [];
-
-setRandomLedData();
-
-function setRandomLedData(){
-    for(var i=0;i<33;i++){
-        randData[i] = Math.floor(Math.random()*256);
-    }
+function startWriting(){
+    shouldWrite = true;
 }
-sendLedData(randData);
+
+function sendDataToArduino(data){
+    dataToWrite = data;
+    startWriting();
+}
