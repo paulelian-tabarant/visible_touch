@@ -1,6 +1,6 @@
 import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
-import { Button, Divider } from 'semantic-ui-react';
+import { Button, Divider, Message, Icon } from 'semantic-ui-react';
 import axios from 'axios';
 
 
@@ -131,13 +131,22 @@ class PixelGrid extends Component {
           onClick={this.handleClearCurrentFrame}/>
         <Button content="Send To Arduino" icon="send" color="blue"
           onClick={this.handleSend}/>
-        {visible && 
-          <Button loading={loading} content="Sent" color="pink" icon="checkmark" />}
         <Divider />
         <Grid
           cells={this.state.cellsArray[this.state.current-1]}
           onCellEvent={this.updatePixel}
         />
+        <Divider />
+        { visible && 
+          (<Message icon>
+            <Icon name='circle notched' loading />
+            <Message.Content>
+              <Message.Header>Please wait</Message.Header>
+              Sending frames to the serial...
+            </Message.Content>
+          </Message>
+          )
+        }
       </div>
     )
   }
