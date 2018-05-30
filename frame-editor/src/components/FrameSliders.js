@@ -27,16 +27,26 @@ class FrameSliders extends Component {
   handleSetDelay = () => {
     const { current, delays, inputValue } = this.state;
     let newDelays = delays.slice();
+    if(inputValue === "") return;
     newDelays[current] = parseInt(inputValue);
-    this.setState({
-      delays: newDelays,
-    });
+    if(newDelays[current] !== NaN) {
+      this.setState({
+        delays: newDelays,
+        inputValue: "",
+      });
+    }
   }
 
   handleInputChange = (event) => {
     this.setState({
       inputValue: event.target.value
     })
+  }
+
+  handleInputKey = (event) => {
+    if(event.keyCode == 13) {
+      this.handleSetDelay();
+    }
   }
 
   render() {
@@ -54,10 +64,12 @@ class FrameSliders extends Component {
         <div className="value">Frame: {current}</div>
         <div className="delay-input-group">
           <Input 
+            type="number"
             className="delay-input-field"
             value={inputValue}
             placeholder={`Current delay : ${curFrameDelay}ms`} action
-            onChange={this.handleInputChange}>
+            onChange={this.handleInputChange}
+            onKeyDown={this.handleInputKey}>
             <input />
             <Button className="apply-delay" onClick={this.handleSetDelay}>Apply</Button>
           </Input>

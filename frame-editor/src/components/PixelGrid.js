@@ -150,7 +150,7 @@ class PixelGrid extends Component {
           </Message>)
         }
         {
-          lastUpload != "" &&
+          lastUpload !== "" &&
           (<Label pointing>Last upload on Arduino: {lastUpload}</Label>)
         }
       </div>
