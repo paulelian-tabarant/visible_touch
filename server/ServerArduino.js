@@ -68,7 +68,13 @@ var serv = http.createServer((req, res) => {
       delay = obj.delay;
       startWriting();
       res.write(JSON.stringify(obj));
-      res.end('ok');
+      checkInterval = setInterval(checkWriting,200);
+      function checkWriting(){
+        if(!shouldWrite){
+          clearInterval(checkInterval);
+          res.end("ok");
+        }
+      }
     });
   }
   else {
