@@ -17,11 +17,8 @@ class MainComponent extends Component {
         b: 93,
         a: 1,
       },
-      layout: {
-        vertical: 1,
-        horizontal: 10,
-      },
-      frames: 10,
+      layout: props.layout,
+      frames: props.frames,
       current: 1,
     }
     this.changeCurrentColor = this.changeCurrentColor.bind(this);
