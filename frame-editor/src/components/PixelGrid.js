@@ -89,7 +89,8 @@ class PixelGrid extends Component {
       ).join();
     data = data.split(',');
     const dataObject = {
-      data: data.map(str => parseInt(str, 10))
+      data: data.map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
+      delay: 1000
     };
     axios.request({
       method: 'post',
