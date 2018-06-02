@@ -146,7 +146,7 @@ class PixelGrid extends Component {
           onClick={this.handleDownload}/>
         <label htmlFor="file" className="ui violet icon button">
             <i className="upload icon"></i>
-            &nbsp; Load Pattern < /label>
+            &nbsp; Load Pattern </label>
         <input type="file" id="file" style={{display:"none"}}
           onChange={this.handleUpload}/>
         <Divider />
