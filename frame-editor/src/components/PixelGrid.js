@@ -1,8 +1,8 @@
+import axios from 'axios';
 import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
 import { Button, Divider } from 'semantic-ui-react';
-import axios from 'axios';
-
+import fileDownload from 'js-file-download';
 
 function generateGrid(layout) {
   const cells = []
@@ -31,6 +31,8 @@ class PixelGrid extends Component {
     this.handleClear = this.handleClear.bind(this);
     this.handleClearCurrentFrame = this.handleClearCurrentFrame.bind(this);
     this.handleSend = this.handleSend.bind(this);
+    this.handleDownload = this.handleDownload.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -113,6 +115,21 @@ class PixelGrid extends Component {
     });
   }
 
+  handleDownload() {
+    fileDownload(JSON.stringify(this.state.cellsArray), 'pattern.json');
+  }
+
+  handleUpload(e) {
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.onload = (event) => {
+      this.setState({
+        cellsArray: JSON.parse(event.target.result)
+      });
+    }
+    reader.readAsText(file);
+  }
+
   changeCurrentFrame(current) {
     this.setState({
       current: current,
@@ -125,6 +142,14 @@ class PixelGrid extends Component {
     const visible = sent || loading;
     return (
       <div>
+        <Button content="Save Pattern" icon="save" color="yellow"
+          onClick={this.handleDownload}/>
+        <label htmlFor="file" className="ui violet icon button">
+            <i className="upload icon"></i>
+            &nbsp; Load Pattern < /label>
+        <input type="file" id="file" style={{display:"none"}}
+          onChange={this.handleUpload}/>
+        <Divider />
         <Button content="New" icon="file outline" color="green"
           onClick={this.handleClear}/>
         <Button content="Clear Current Frame" icon="close" color="red"
@@ -132,7 +157,8 @@ class PixelGrid extends Component {
         <Button content="Send To Arduino" icon="send" color="blue"
           onClick={this.handleSend}/>
         {visible && 
-          <Button loading={loading} content="Sent" color="pink" icon="checkmark" />}
+          <Button loading={loading} content="Sent" color="pink"
+            icon="checkmark" />}
         <Divider />
         <Grid
           cells={this.state.cellsArray[this.state.current-1]}
