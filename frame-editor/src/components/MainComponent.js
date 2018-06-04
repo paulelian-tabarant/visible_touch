@@ -46,6 +46,7 @@ class MainComponent extends Component {
   }
 
   render() {
+    const defaultDelay = 250;
     return (
       <div className="main-component">
         <Header as="h1">Frame Editor</Header>
@@ -61,7 +62,8 @@ class MainComponent extends Component {
         <FrameSliders
           frames={this.state.frames}
           current={this.state.current}
-          changeCurrentFrame={this.changeCurrentFrame}/>
+          changeCurrentFrame={this.changeCurrentFrame}
+          defaultDelay={defaultDelay}/>
         <Divider />
         <PixelGrid
           ref={ref => {this.pixelGrid = ref;}}

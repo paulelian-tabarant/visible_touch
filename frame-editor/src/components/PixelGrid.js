@@ -1,8 +1,9 @@
 import axios from 'axios';
 import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
-import { Button, Divider } from 'semantic-ui-react';
 import fileDownload from 'js-file-download';
+import { Button, Divider, Message, Icon, Label } from 'semantic-ui-react';
+
 
 function generateGrid(layout) {
   const cells = []
@@ -26,6 +27,7 @@ class PixelGrid extends Component {
       current: props.current,
       sent: false,
       loading: false,
+      lastUpload: "",
     };
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
@@ -103,9 +105,11 @@ class PixelGrid extends Component {
     }).then(res => {
       console.log(res);
       console.log(res.data);
+      var date = new Date();
       this.setState({
         loading: false,
         sent: true,
+        lastUpload: date.toUTCString(),
       });
       setTimeout(() => {
         this.setState({
@@ -139,7 +143,7 @@ class PixelGrid extends Component {
   render() {
     const sent = this.state.sent;
     const loading = this.state.loading;
-    const visible = sent || loading;
+    const lastUpload = this.state.lastUpload;
     return (
       <div>
         <Button content="Save Pattern" icon="save" color="yellow"
@@ -156,14 +160,25 @@ class PixelGrid extends Component {
           onClick={this.handleClearCurrentFrame}/>
         <Button content="Send To Arduino" icon="send" color="blue"
           onClick={this.handleSend}/>
-        {visible && 
-          <Button loading={loading} content="Sent" color="pink"
-            icon="checkmark" />}
         <Divider />
         <Grid
           cells={this.state.cellsArray[this.state.current-1]}
           onCellEvent={this.updatePixel}
         />
+        <Divider />
+        { loading && 
+          (<Message icon>
+            <Icon name='circle notched' loading />
+            <Message.Content>
+              <Message.Header>Please wait</Message.Header>
+              Sending frames to the serial...
+            </Message.Content>
+          </Message>)
+        }
+        {
+          lastUpload !== "" &&
+          (<Label pointing>Last upload on Arduino: {lastUpload}</Label>)
+        }
       </div>
     )
   }
