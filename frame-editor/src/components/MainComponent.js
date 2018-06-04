@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Divider, Header } from 'semantic-ui-react';
+import { Divider, Header, Grid } from 'semantic-ui-react';
 import ColorPicker from './ColorPicker';
 import GridComponent from './GridComponent';
 import LayoutSliders from './LayoutSliders';
@@ -29,7 +29,13 @@ class MainComponent extends Component {
     super(props);
     let RGBAcolors = defaultColors.map((c, i) => getRGBA(c));
     this.state = {
-      colors: RGBAcolors,
+      color: {
+        r: '255',
+        g: '255',
+        b: '255',
+        a: '1',
+      },
+      colorPalette: RGBAcolors,
       layout: props.layout,
       frames: props.frames,
       current: 1,
@@ -68,13 +74,16 @@ class MainComponent extends Component {
           layout={this.state.layout}
           changeLayout={this.changeLayout}/> */}
         <Divider />
-        <div display='flex' flex-flow='column wrap'>
-        {this.state.colors.map((color, i) =>
-          <ColorPicker
-          key={i} 
-          color={this.state.colors[i]}
-          changeCurrentColor={this.changeCurrentColor}/>)}
-        </div>
+        <Grid divided='vertically'>
+          <Grid.Row columns={this.state.colorPalette.length}>
+            {this.state.colorPalette.map((color, i) =>
+              <Grid.Column key={i}>
+                <ColorPicker 
+                color={this.state.colorPalette[i]}
+                changeCurrentColor={this.changeCurrentColor}/>
+              </Grid.Column>)}
+          </Grid.Row>
+        </Grid>
         <Divider />
         <FrameSliders
           frames={this.state.frames}
