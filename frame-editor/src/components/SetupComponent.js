@@ -6,9 +6,9 @@ class SetupComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      frames: 10,
+      frames: 2,
       horizontal: 10,
-      vertical: 2,
+      vertical: 6,
       setupDone: false,
     }
     this.handleChange = this.handleChange.bind(this);

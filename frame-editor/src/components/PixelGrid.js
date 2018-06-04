@@ -10,7 +10,7 @@ function generateGrid(layout) {
   for (let i = 0; i < layout.horizontal * layout.vertical; i++) {
     cells.push({
       width: 100 / layout.horizontal,
-      color: 'rgba(49,49,49,1)',
+      color: 'rgba(0,0,0,1)',
       id: i
     })
   }
@@ -28,6 +28,7 @@ class PixelGrid extends Component {
       sent: false,
       loading: false,
       lastUpload: "",
+      serpentineMode: true,
     };
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
@@ -87,13 +88,34 @@ class PixelGrid extends Component {
     this.setState({
       loading: true,
     });
+    console.log(this.state.cellsArray);
     var data = this.state.cellsArray
       .map(cells =>
         cells.map(cell => cell.color.split(/,|\(/).slice(1,4).join()).join()
-      ).join();
-    data = data.split(',');
+      );
+    //serpentine mode
+    var serp = this.state.cellsArray
+    .map((cells, frame) =>
+      cells.map((cell, i) => {
+        var hor = this.props.layout.horizontal;
+        var j = Math.floor(i/hor);
+        if (j % 2 == 0){
+          return cell;
+        }
+        else{
+          return this.state.cellsArray[frame][(j+1)*hor-(i%hor)-1];
+        }
+      })
+    );
+    serp = serp
+      .map(cells =>
+        cells.map(cell => cell.color.split(/,|\(/).slice(1, 4).join()).join()
+      );
+    data = data.join().split(',');
+    serp = serp.join().split(',');
     const dataObject = {
-      data: data.map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
+      data: (this.state.serpentineMode ? serp : data)
+        .map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
       delay: 1000
     };
     axios.request({
