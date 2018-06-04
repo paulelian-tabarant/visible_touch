@@ -36,6 +36,7 @@ class MainComponent extends Component {
         a: '1',
       },
       colorPalette: RGBAcolors,
+      selectedColor: 0,
       layout: props.layout,
       frames: props.frames,
       current: 1,
@@ -43,6 +44,7 @@ class MainComponent extends Component {
     this.changeCurrentColor = this.changeCurrentColor.bind(this);
     this.changeLayout = this.changeLayout.bind(this);
     this.changeCurrentFrame = this.changeCurrentFrame.bind(this);
+    this.handleColorPickerClick = this.handleColorPickerClick.bind(this);
   }
 
   changeCurrentColor(color) {
@@ -64,6 +66,12 @@ class MainComponent extends Component {
     this.pixelGrid.changeCurrentFrame(current);
   }
 
+  handleColorPickerClick(index) {
+    this.setState({
+      selectedColor: index,
+    });
+  }
+
   render() {
     const defaultDelay = 250;
     return (
@@ -79,8 +87,11 @@ class MainComponent extends Component {
             {this.state.colorPalette.map((color, i) =>
               <Grid.Column key={i}>
                 <ColorPicker 
-                color={this.state.colorPalette[i]}
-                changeCurrentColor={this.changeCurrentColor}/>
+                  index={i}
+                  color={this.state.colorPalette[i]}
+                  changeCurrentColor={this.changeCurrentColor}
+                  selected={i === this.state.selectedColor}
+                  handleColorPickerClick={this.handleColorPickerClick}/>
               </Grid.Column>)}
           </Grid.Row>
         </Grid>

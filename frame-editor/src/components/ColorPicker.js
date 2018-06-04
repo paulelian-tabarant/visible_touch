@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider } from 'semantic-ui-react'
+import { Divider, Label, Icon } from 'semantic-ui-react'
 import { SketchPicker } from 'react-color';
 import reactCSS from 'reactcss';
 import '../ColorPicker.css';
@@ -9,12 +9,14 @@ class ColorPicker extends React.Component {
     super(props);
     this.state = {
       displayColorPicker: false,
-      color: props.color
+      color: props.color,
     };
   }
 
   handleClick = () => {
+    const { handleColorPickerClick, index } = this.props;
     this.setState({ displayColorPicker: !this.state.displayColorPicker })
+    handleColorPickerClick(index);
   };
 
   handleClose = () => {
@@ -63,14 +65,18 @@ class ColorPicker extends React.Component {
     });
 
     return (
+      <div>
         <div style={ styles.swatch } onClick={ this.handleClick }>
           <div style={ styles.color } />
-          { this.state.displayColorPicker ? <div style={ styles.popover }>
+          { this.props.selected && 
+            <Icon name='angle up'/> }
+        </div>
+        { this.state.displayColorPicker ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ this.handleClose }/>
           <SketchPicker color={ this.state.color }
             onChange={ this.handleChange } />
           </div> : null }
-        </div>
+      </div>
     )
   }
 }
