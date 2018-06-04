@@ -6,17 +6,30 @@ import LayoutSliders from './LayoutSliders';
 import PixelGrid from './PixelGrid';
 import FrameSliders from './FrameSliders';
 
+const RED = [255, 0, 0, 1], 
+GREEN = [0, 255, 0, 1], 
+BLUE = [0, 0, 255, 1],
+WHITE = [255, 255, 255, 1], 
+GREY = [110, 110, 110, 1], 
+BLACK = [0, 0, 0, 1];
+const defaultColors = [RED, GREEN, BLUE, BLACK, GREY, WHITE];
+
+function getRGBA(color) {
+  let RGBAcolor = {
+    'r': color[0],
+    'g': color[1],
+    'b': color[2],
+    'a': color[3],
+  }
+  return RGBAcolor;
+}
 
 class MainComponent extends Component {
   constructor(props) {
     super(props);
+    let RGBAcolors = defaultColors.map((c, i) => getRGBA(c));
     this.state = {
-      color: {
-        r: 86,
-        g: 188,
-        b: 93,
-        a: 1,
-      },
+      colors: RGBAcolors,
       layout: props.layout,
       frames: props.frames,
       current: 1,
@@ -55,9 +68,13 @@ class MainComponent extends Component {
           layout={this.state.layout}
           changeLayout={this.changeLayout}/> */}
         <Divider />
-        <ColorPicker 
-          color={this.state.color}
-          changeCurrentColor={this.changeCurrentColor}/>
+        <div display='flex' flex-flow='column wrap'>
+        {this.state.colors.map((color, i) =>
+          <ColorPicker
+          key={i} 
+          color={this.state.colors[i]}
+          changeCurrentColor={this.changeCurrentColor}/>)}
+        </div>
         <Divider />
         <FrameSliders
           frames={this.state.frames}

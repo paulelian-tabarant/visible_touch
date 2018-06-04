@@ -1,4 +1,5 @@
 import React from 'react';
+import { Divider } from 'semantic-ui-react'
 import { SketchPicker } from 'react-color';
 import reactCSS from 'reactcss';
 import '../ColorPicker.css';
@@ -30,7 +31,7 @@ class ColorPicker extends React.Component {
     const styles = reactCSS({
       'default': {
         color: {
-          width: '18vw',
+          width: '50px',
           height: '5vh',
           borderRadius: '2px',
           background: `rgba(${ this.state.color.r },`+
@@ -62,17 +63,14 @@ class ColorPicker extends React.Component {
     });
 
     return (
-      <div>
         <div style={ styles.swatch } onClick={ this.handleClick }>
           <div style={ styles.color } />
-        </div>
-        { this.state.displayColorPicker ? <div style={ styles.popover }>
+          { this.state.displayColorPicker ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ this.handleClose }/>
           <SketchPicker color={ this.state.color }
             onChange={ this.handleChange } />
-        </div> : null }
-
-      </div>
+          </div> : null }
+        </div>
     )
   }
 }
