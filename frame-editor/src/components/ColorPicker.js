@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, Label, Icon } from 'semantic-ui-react'
+import { Divider, Label, Icon, Dimmer, Segment } from 'semantic-ui-react'
 import { SketchPicker } from 'react-color';
 import reactCSS from 'reactcss';
 import '../ColorPicker.css';
@@ -15,6 +15,7 @@ class ColorPicker extends React.Component {
 
   handleClick = () => {
     const { handleColorPickerClick, index } = this.props;
+    console.log("Clicked!");
     this.setState({ displayColorPicker: !this.state.displayColorPicker })
     handleColorPickerClick(index);
   };
@@ -51,10 +52,12 @@ class ColorPicker extends React.Component {
         },
         popover: {
           position: 'absolute',
-          zIndex: '2',
-          left: '35vw',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
         },
         cover: {
+          zIndex: '2',
           position: 'fixed',
           top: '0px',
           right: '0px',
@@ -64,18 +67,24 @@ class ColorPicker extends React.Component {
       },
     });
 
+    const { displayColorPicker } = this.state
+
     return (
       <div>
-        <div style={ styles.swatch } onClick={ this.handleClick }>
-          <div style={ styles.color } />
-          { this.props.selected && 
-            <Icon name='angle up'/> }
+        <div>
+          <div style={ styles.swatch } onClick={ this.handleClick }>
+            <div style={ styles.color } />
+            { this.props.selected && 
+              <Icon name='angle up'/> }
+          </div>
         </div>
-        { this.state.displayColorPicker ? <div style={ styles.popover }>
-          <div style={ styles.cover } onClick={ this.handleClose }/>
-          <SketchPicker color={ this.state.color }
-            onChange={ this.handleChange } />
-          </div> : null }
+        { displayColorPicker &&
+          <Dimmer active={displayColorPicker} onClickOutside={this.handleClose} page>
+            <div style={ styles.popover }>
+              <SketchPicker color={ this.state.color }
+                onChange={ this.handleChange } />
+            </div>
+        </Dimmer> }
       </div>
     )
   }
