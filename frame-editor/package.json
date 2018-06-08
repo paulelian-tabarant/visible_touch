@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "js-file-download": "^0.4.1",
     "pixel-grid-react": "0.0.4",
     "prop-types": "^15.6.1",
     "react": "^16.3.2",

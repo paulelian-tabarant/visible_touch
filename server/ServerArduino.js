@@ -1,7 +1,8 @@
 var SerialPort = require('serialport'); // include the serialport library
 var http = require('http');
 
-var myPort = new SerialPort("/dev/ttyACM0", {
+//var myPort = new SerialPort("/dev/ttyACM0", {
+var myPort = new SerialPort("COM4", {
   baudRate: 9600,
   dataBits: 8,
   parity: 'none',
@@ -14,6 +15,7 @@ console.log("blabla");
 
 var shouldWrite = false;
 var dataToWrite;
+var delay = 250;
 
 function openPort() {
   ready = true;
@@ -25,7 +27,7 @@ function openPort() {
     shouldWrite = false;
   });
 
-  writeInterval = setInterval(writeData, 1000);
+  writeInterval = setInterval(writeData, 2000);
 }
 
 function writeData() {
@@ -38,6 +40,7 @@ function writeData() {
     }
     myPort.write("-2 ");
     myPort.write(dataToWrite.length.toString() + " ");
+    myPort.write(delay.toString() + " ");
   }
 }
 
@@ -52,7 +55,7 @@ function sendDataToArduino(data) {
 
 var serv = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-	res.setHeader('Access-Control-Allow-Headers', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
   res.writeHead(200, {'Content-Type': 'application/json'});
   if (req.method === 'POST') {
     let body = '';
@@ -62,12 +65,20 @@ var serv = http.createServer((req, res) => {
     req.on('end', () => {
       obj = JSON.parse(body);
       dataToWrite = obj.data;
+      delay = obj.delay;
       startWriting();
       res.write(JSON.stringify(obj));
-      res.end('ok');
+      checkInterval = setInterval(checkWriting,200);
+      function checkWriting(){
+        if(!shouldWrite){
+          clearInterval(checkInterval);
+          res.end("ok");
+        }
+      }
     });
   }
   else {
+    console.log("bli");
     res.end();
   }
 }).listen(8000);

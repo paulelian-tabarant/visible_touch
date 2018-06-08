@@ -2,12 +2,13 @@
 
 #define LED_PIN     5
 #define NUM_LEDS    10
-#define BRIGHTNESS  64
+#define BRIGHTNESS  128
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
 int nextLed = 0;
 int counter = 0;
 int dataLength = 0;
+int delayFrame = 500;
 bool started = false;
 bool ended = false;
 
@@ -34,7 +35,7 @@ void loop()
         nextLed = (nextLed + 1) % dataLength;
     }
     FastLED.show();
-    delay(250);
+    delay(delayFrame);
 }
 
 void serialEvent(){
@@ -86,8 +87,10 @@ void serialEvent(){
     }
     if(Serial.available()){
         int tot = Serial.parseInt();
+        delayFrame = Serial.parseInt();
         if(tot == counter){
             Serial.print(counter);
+            Serial.print(delayFrame);
             dataLength = counter/3;
             nextLed = 0;
         }
