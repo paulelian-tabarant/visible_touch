@@ -7,12 +7,10 @@ import { Input, Button, Header, Segment, Divider } from 'semantic-ui-react';
 class FrameSliders extends Component {
   constructor(props, context) {
     super(props, context);
-    const { defaultDelay } = this.props;
-    let defaultDelays = new Array(props.frames).fill(defaultDelay);
     this.state = {
       frames: props.frames,
       current: props.current,
-      delays: defaultDelays,
+      delays: props.delays,
       inputValue: "",
     };
   }
@@ -29,12 +27,13 @@ class FrameSliders extends Component {
     const { current, delays, inputValue } = this.state;
     let newDelays = delays.slice();
     if(inputValue === "") return;
-    newDelays[current] = parseInt(inputValue);
-    if(newDelays[current] !== NaN) {
+    newDelays[current-1] = parseInt(inputValue);
+    if(newDelays[current-1] !== NaN) {
       this.setState({
         delays: newDelays,
         inputValue: "",
       });
+      this.props.changeDelays(newDelays);
     }
   }
 
@@ -52,7 +51,7 @@ class FrameSliders extends Component {
 
   render() {
     let { frames, current, delays, inputValue } = this.state;
-    let curFrameDelay = delays[current];
+    let curFrameDelay = delays[current-1];
     return (
       <Segment className="slider-group">
         <Header as='h2'>Frame Selector</Header>
@@ -66,7 +65,8 @@ class FrameSliders extends Component {
         />
         <Header as='h4' className="value">Frame: {current}</Header>
         <div className="delay-input-group">
-          <Input 
+          <Input
+            fluid
             type="number"
             className="delay-input-field"
             value={inputValue}

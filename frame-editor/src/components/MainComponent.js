@@ -23,10 +23,13 @@ function getRGBA(color) {
   }
   return RGBAcolor;
 }
-
+Array()
 class MainComponent extends Component {
   constructor(props) {
     super(props);
+    const defaultDelay = 250;
+    let defaultDelays = Array.apply(null, {length: props.frames})
+      .map(() => defaultDelay);
     let RGBAcolors = defaultColors.map((c, i) => getRGBA(c));
     this.state = {
       color: {
@@ -36,6 +39,7 @@ class MainComponent extends Component {
         a: '1',
       },
       colorPalette: RGBAcolors,
+      delays: defaultDelays,
       selectedColor: 0,
       layout: props.layout,
       frames: props.frames,
@@ -43,6 +47,7 @@ class MainComponent extends Component {
       serpentineMode: props.serpentineMode,
     }
     this.changeCurrentColor = this.changeCurrentColor.bind(this);
+    this.changeDelays = this.changeDelays.bind(this);
     this.changeLayout = this.changeLayout.bind(this);
     this.changeCurrentFrame = this.changeCurrentFrame.bind(this);
     this.handleColorPickerClick = this.handleColorPickerClick.bind(this);
@@ -67,6 +72,13 @@ class MainComponent extends Component {
     this.pixelGrid.changeCurrentFrame(current);
   }
 
+  changeDelays(delays) {
+    this.setState({
+      delays: delays
+    });
+    this.pixelGrid.changeDelays(delays);
+  }
+
   handleColorPickerClick(index) {
     this.setState({
       selectedColor: index,
@@ -74,7 +86,6 @@ class MainComponent extends Component {
   }
 
   render() {
-    const defaultDelay = 250;
     return (
       <div className="main-component">
         <Header as="h1">Frame Editor</Header>
@@ -87,17 +98,18 @@ class MainComponent extends Component {
           <Grid.Row columns="3">
             <Grid.Column width="4">
               <FrameSliders
+                delays={this.state.delays}
                 frames={this.state.frames}
                 current={this.state.current}
                 changeCurrentFrame={this.changeCurrentFrame}
-                defaultDelay={defaultDelay}/>
+                changeDelays={this.changeDelays}/>
             </Grid.Column>
             <Grid.Column width="8">
-              
               <PixelGrid
                 ref={ref => {this.pixelGrid = ref;}}
                 color={this.state.color}
                 current={this.state.current}
+                delays={this.state.delays}
                 frames={this.state.frames}
                 layout={this.state.layout}
                 serpentineMode={this.state.serpentineMode}/>

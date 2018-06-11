@@ -25,25 +25,20 @@ class PixelGrid extends Component {
     this.state = {
       cellsArray: cellsArray,
       current: props.current,
+      delays: props.delays,
       sent: false,
       loading: false,
       lastUpload: "",
       serpentineMode: props.serpentineMode,
     };
+    console.log(props.delays);
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
     this.handleClearCurrentFrame = this.handleClearCurrentFrame.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
+    this.handlePreview = this.handlePreview.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.layout !== nextProps.layout){
-      this.setState({
-        cells: generateGrid(nextProps.layout)
-      });
-    }
   }
 
   updatePixel(i) {
@@ -146,6 +141,10 @@ class PixelGrid extends Component {
     fileDownload(JSON.stringify(this.state.cellsArray), 'pattern.json');
   }
 
+  handlePreview() {
+    
+  }
+
   handleUpload(e) {
     var file = e.target.files[0];
     var reader = new FileReader();
@@ -163,12 +162,20 @@ class PixelGrid extends Component {
     });
   }
 
+  changeDelays(delays) {
+    this.setState({
+      delays: delays
+    });
+  }
+
   render() {
     const sent = this.state.sent;
     const loading = this.state.loading;
     const lastUpload = this.state.lastUpload;
     return (
       <div>
+        <Button content="Preview Pattern" icon="play" color="orange"
+          onClick={this.handlePreview}/>
         <Button content="Save Pattern" icon="save" color="yellow"
           onClick={this.handleDownload}/>
         <label htmlFor="file" className="ui violet icon button">

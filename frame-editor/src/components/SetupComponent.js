@@ -6,7 +6,7 @@ class SetupComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      frames: 2,
+      frames: 5,
       horizontal: 10,
       vertical: 6,
       setupDone: false,
