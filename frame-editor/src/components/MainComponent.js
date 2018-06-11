@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Divider, Header, Grid } from 'semantic-ui-react';
+import { Divider, Header, Grid, Segment } from 'semantic-ui-react';
 import ColorPicker from './ColorPicker';
 import GridComponent from './GridComponent';
 import LayoutSliders from './LayoutSliders';
@@ -31,8 +31,8 @@ class MainComponent extends Component {
     this.state = {
       color: {
         r: '255',
-        g: '255',
-        b: '255',
+        g: '0',
+        b: '0',
         a: '1',
       },
       colorPalette: RGBAcolors,
@@ -40,6 +40,7 @@ class MainComponent extends Component {
       layout: props.layout,
       frames: props.frames,
       current: 1,
+      serpentineMode: props.serpentineMode,
     }
     this.changeCurrentColor = this.changeCurrentColor.bind(this);
     this.changeLayout = this.changeLayout.bind(this);
@@ -82,35 +83,49 @@ class MainComponent extends Component {
           layout={this.state.layout}
           changeLayout={this.changeLayout}/> */}
         <Divider />
-        <Grid divided='vertically'>
-          <Grid.Row columns={this.state.colorPalette.length}>
-            {this.state.colorPalette.map((color, i) =>
-              <Grid.Column key={i}>
-                <ColorPicker 
-                  index={i}
-                  color={this.state.colorPalette[i]}
-                  changeCurrentColor={this.changeCurrentColor}
-                  selected={i === this.state.selectedColor}
-                  handleColorPickerClick={this.handleColorPickerClick}/>
-              </Grid.Column>)}
+        <Grid divided>
+          <Grid.Row columns="3">
+            <Grid.Column width="4">
+              <FrameSliders
+                frames={this.state.frames}
+                current={this.state.current}
+                changeCurrentFrame={this.changeCurrentFrame}
+                defaultDelay={defaultDelay}/>
+            </Grid.Column>
+            <Grid.Column width="8">
+              
+              <PixelGrid
+                ref={ref => {this.pixelGrid = ref;}}
+                color={this.state.color}
+                current={this.state.current}
+                frames={this.state.frames}
+                layout={this.state.layout}
+                serpentineMode={this.state.serpentineMode}/>
+              {/* <GridComponent
+                color={this.state.color}
+                layout={this.state.layout}/> */}
+            </Grid.Column>
+            <Grid.Column width="4">
+              <Segment className="color-palette">
+                <Header as='h2'> Color Palette</Header>
+                <Divider />
+                <Grid divided='vertically'>
+                  <Grid.Row columns={3}>
+                    {this.state.colorPalette.map((color, i) =>
+                      <Grid.Column key={i}>
+                        <ColorPicker 
+                          index={i}
+                          color={this.state.colorPalette[i]}
+                          changeCurrentColor={this.changeCurrentColor}
+                          selected={i === this.state.selectedColor}
+                          handleColorPickerClick={this.handleColorPickerClick}/>
+                      </Grid.Column>)}
+                  </Grid.Row>
+                </Grid>
+              </Segment>
+            </Grid.Column>
           </Grid.Row>
         </Grid>
-        <Divider />
-        <FrameSliders
-          frames={this.state.frames}
-          current={this.state.current}
-          changeCurrentFrame={this.changeCurrentFrame}
-          defaultDelay={defaultDelay}/>
-        <Divider />
-        <PixelGrid
-          ref={ref => {this.pixelGrid = ref;}}
-          color={this.state.color}
-          current={this.state.current}
-          frames={this.state.frames}
-          layout={this.state.layout}/>
-        {/* <GridComponent
-          color={this.state.color}
-          layout={this.state.layout}/> */}
       </div>
     );
   }

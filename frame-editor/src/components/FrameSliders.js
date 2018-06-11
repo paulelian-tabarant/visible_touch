@@ -1,7 +1,8 @@
+import 'react-rangeslider/lib/index.css';
+import '../FrameSliders.css';
 import React, { Component } from 'react';
 import Slider from 'react-rangeslider';
-import { Input, Button } from 'semantic-ui-react'
-import 'react-rangeslider/lib/index.css'
+import { Input, Button, Header, Segment, Divider } from 'semantic-ui-react';
 
 class FrameSliders extends Component {
   constructor(props, context) {
@@ -53,7 +54,9 @@ class FrameSliders extends Component {
     let { frames, current, delays, inputValue } = this.state;
     let curFrameDelay = delays[current];
     return (
-      <div className="slider-group">
+      <Segment className="slider-group">
+        <Header as='h2'>Frame Selector</Header>
+        <Divider />
         <Slider
           min={1}
           max={frames}
@@ -61,7 +64,7 @@ class FrameSliders extends Component {
           orientation="horizontal"
           onChange={this.handleFrameChange}
         />
-        <div className="value">Frame: {current}</div>
+        <Header as='h4' className="value">Frame: {current}</Header>
         <div className="delay-input-group">
           <Input 
             type="number"
@@ -74,7 +77,7 @@ class FrameSliders extends Component {
             <Button className="apply-delay" onClick={this.handleSetDelay}>Apply</Button>
           </Input>
         </div>
-      </div>
+      </Segment>
     )
   }
 }
