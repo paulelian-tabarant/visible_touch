@@ -32,7 +32,9 @@ class PixelGrid extends Component {
       lastUpload: "",
       serpentineMode: props.serpentineMode,
     };
-    console.log(props.delays);
+  
+    this.thread = undefined;
+
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
     this.handleClearCurrentFrame = this.handleClearCurrentFrame.bind(this);

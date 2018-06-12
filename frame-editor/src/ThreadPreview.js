@@ -3,9 +3,13 @@ class ThreadPreview {
     this.that = that;
     this.delays = delays;
     this.index = 0;
+    this.stopBool = false;
   }
 
   run() {
+    if (this.stopBool) {
+      return ;
+    }
     if (this.index === this.delays.length){
       this.index = 0;
     }
@@ -18,6 +22,10 @@ class ThreadPreview {
 
   start() {
     this.run();
+  }
+
+  stop() {
+    this.stopBool = true;
   }
 }
 
