@@ -1,26 +1,28 @@
 #include <FastLED.h>
 
 #define LED_PIN     5
-#define NUM_LEDS    60
+#define NUM_LEDS    100
 #define BRIGHTNESS  128
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
 int nextLed = 0;
-int counter = 0;
+int nextFrame = 0;
 int dataLength = 0;
-int delayFrame = 500;
-bool started = false;
-bool ended = false;
-
+int numLeds = 10;
+int numFrames = 10;
+int delayFrames[100];
 CRGB leds[NUM_LEDS];
-CRGB ledData[500];
+CRGB ledData[2000];
+bool ended = false;
+bool started = false;
+String inString = "";
 
 void setup() {
     delay( 3000 ); // power-up safety delay
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(  BRIGHTNESS );
     
-    Serial.begin(9600);
+    Serial.begin(115200);
     while(!Serial){
       //wait for connection
       ;
@@ -30,69 +32,31 @@ void setup() {
 
 void loop()
 {
-    for(int i=0; i<NUM_LEDS; i++){
-        leds[i] = ledData[nextLed];
-        nextLed = (nextLed + 1) % dataLength;
+    if(!started){
+        for(int i=0; i<numLeds; i++){
+            leds[i] = ledData[nextLed];
+            nextLed = (nextLed + 1) % dataLength;
+        }
+        FastLED.show();
+        delay(delayFrames[nextFrame]);
+        nextFrame = (nextFrame + 1) % numFrames;
     }
-    FastLED.show();
-    delay(delayFrame);
+    
+    if(ended){
+        Serial.print(inString);
+        inString = "";
+        ended = false;
+        started = false;
+    }
 }
 
 void serialEvent(){
-    counter = 0;
-    started = false;
-    ended = false;
-    int antiLoopCounter = 0;
-    while(!ended){
-        if(Serial.available()){
-            antiLoopCounter = 0;
-            if(started){
-                int val = Serial.parseInt();
-                if(val == -2){
-                    ended = true;
-                    //Serial.print("E");
-                }else if(val == -1){
-                    counter = 0;
-                }else{
-                    if(counter%3==0){
-                        ledData[counter/3].r = val;
-                    }else if(counter%3==1){
-                        ledData[counter/3].g = val;          
-                    }else{
-                        ledData[counter/3].b = val;
-                    }
-                    counter = counter + 1;
-                    //Serial.print(val);
-                }
-            }else{
-                int val = Serial.parseInt();
-                if(val == -1){
-                    started = true;
-                    //Serial.print("S");
-                }
-            }
-            
-        }else{
-            delay(50);
-            antiLoopCounter = antiLoopCounter + 1;
-            if(antiLoopCounter > 10){
-                break;
-            }
-        }
-    }
-    while(!Serial.available() && antiLoopCounter<10){
-        Serial.write("hey");
-        antiLoopCounter++;
-        delay(50);
-    }
-    if(Serial.available()){
-        int tot = Serial.parseInt();
-        delayFrame = Serial.parseInt();
-        if(tot == counter){
-            Serial.print(counter);
-            Serial.print(delayFrame);
-            dataLength = counter/3;
-            nextLed = 0;
+    while(Serial.available()){
+        char inChar = (char)Serial.read();
+        inString += inChar;
+        started = true;
+        if(inChar == '>'){
+            ended = true;
         }
     }
 }

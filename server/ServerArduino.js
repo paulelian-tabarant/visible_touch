@@ -1,9 +1,9 @@
 var SerialPort = require('serialport'); // include the serialport library
 var http = require('http');
 
-var myPort = new SerialPort("/dev/ttyACM0", {
-// var myPort = new SerialPort("COM4", {
-  baudRate: 9600,
+// var myPort = new SerialPort("/dev/ttyACM0", {
+var myPort = new SerialPort("COM4", {
+  baudRate: 115200,
   dataBits: 8,
   parity: 'none',
   stopBits: 1,
@@ -15,7 +15,8 @@ console.log("blabla");
 
 var shouldWrite = false;
 var dataToWrite;
-var delay = 250;
+var delay = [];
+var dataReceived = "";
 
 function openPort() {
   ready = true;
@@ -23,24 +24,31 @@ function openPort() {
   //console.log('baud rate: ' + myPort.options.baudRate);
 
   myPort.on('data', function (data) {
-    console.log(data.toString());
+    dataReceived += data.toString();
     shouldWrite = false;
   });
 
-  writeInterval = setInterval(writeData, 2000);
+  writeInterval = setInterval(writeData, 4000);
 }
 
 function writeData() {
+  console.log(dataReceived);
+  dataReceived = "";
   console.log(shouldWrite);
   if (shouldWrite) {
-    myPort.write("-1 ");
-    for (var i = 0; i < dataToWrite.length; i++) {
-      myPort.write(dataToWrite[i].toString());
-      myPort.write(" ");
+    var stringToSend = "<";
+    stringToSend += "60,";
+    stringToSend += delay.length.toString() + ",";
+    for(var i = 0; i < delay.length; i++){
+      stringToSend += delay[i].toString() + ",";
     }
-    myPort.write("-2 ");
-    myPort.write(dataToWrite.length.toString() + " ");
-    myPort.write(delay.toString() + " ");
+    for (var i = 0; i < dataToWrite.length-1; i++) {
+      stringToSend += dataToWrite[i].toString() + ",";
+    }
+    stringToSend += dataToWrite[dataToWrite.length-1].toString();
+    stringToSend += ">";
+    console.log(stringToSend);
+    myPort.write(stringToSend);
   }
 }
 
@@ -66,6 +74,7 @@ var serv = http.createServer((req, res) => {
       obj = JSON.parse(body);
       dataToWrite = obj.data;
       delay = obj.delay;
+      numLeds = obj.numLeds;
       startWriting();
       res.write(JSON.stringify(obj));
       checkInterval = setInterval(checkWriting,200);
