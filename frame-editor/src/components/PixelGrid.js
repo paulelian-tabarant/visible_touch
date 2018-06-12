@@ -3,6 +3,7 @@ import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
 import fileDownload from 'js-file-download';
 import { Button, Divider, Message, Icon, Label } from 'semantic-ui-react';
+import ThreadPreview from '../ThreadPreview';
 
 
 function generateGrid(layout) {
@@ -142,7 +143,8 @@ class PixelGrid extends Component {
   }
 
   handlePreview() {
-    
+    var thread = new ThreadPreview(this, this.state.delays);
+    thread.start();
   }
 
   handleUpload(e) {
