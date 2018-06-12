@@ -33,7 +33,7 @@ class PixelGrid extends Component {
       serpentineMode: props.serpentineMode,
     };
   
-    this.thread = undefined;
+    this.thread = null;
 
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
@@ -145,8 +145,8 @@ class PixelGrid extends Component {
   }
 
   handlePreview() {
-    var thread = new ThreadPreview(this, this.state.delays);
-    thread.start();
+    this.thread = new ThreadPreview(this, this.state.delays);
+    this.thread.start();
   }
 
   handleUpload(e) {
