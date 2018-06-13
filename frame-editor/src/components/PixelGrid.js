@@ -2,7 +2,7 @@ import axios from 'axios';
 import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
 import fileDownload from 'js-file-download';
-import { Button, Divider, Message, Icon, Label } from 'semantic-ui-react';
+import { Button, Dimmer, Divider, Message, Icon, Label } from 'semantic-ui-react';
 import ThreadPreview from '../ThreadPreview';
 
 
@@ -26,11 +26,13 @@ class PixelGrid extends Component {
     this.state = {
       cellsArray: cellsArray,
       current: props.current,
+      currentPreview: 1,
       delays: props.delays,
       sent: false,
       loading: false,
       lastUpload: "",
       serpentineMode: props.serpentineMode,
+      previewMode: false,
     };
   
     this.thread = null;
@@ -38,6 +40,7 @@ class PixelGrid extends Component {
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
     this.handleClearCurrentFrame = this.handleClearCurrentFrame.bind(this);
+    this.handleClosePreview = this.handleClosePreview.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
     this.handlePreview = this.handlePreview.bind(this);
@@ -145,8 +148,20 @@ class PixelGrid extends Component {
   }
 
   handlePreview() {
+    this.setState({
+      previewMode: true,
+      currentPreview: 1,
+    });
     this.thread = new ThreadPreview(this, this.state.delays);
     this.thread.start();
+  }
+
+  handleClosePreview() {
+    this.thread.stop();
+    this.setState({
+      previewMode: false,
+      currentPreview: 1,
+    });
   }
 
   handleUpload(e) {
@@ -176,6 +191,7 @@ class PixelGrid extends Component {
     const sent = this.state.sent;
     const loading = this.state.loading;
     const lastUpload = this.state.lastUpload;
+    const previewMode = this.state.previewMode;
     return (
       <div>
         <Button content="Preview Pattern" icon="play" color="orange"
@@ -195,10 +211,19 @@ class PixelGrid extends Component {
         <Button content="Send To Arduino" icon="send" color="blue"
           onClick={this.handleSend}/>
         <Divider />
-        <Grid
-          cells={this.state.cellsArray[this.state.current-1]}
-          onCellEvent={this.updatePixel}
-        />
+        {!previewMode &&
+          <Grid
+            cells={this.state.cellsArray[this.state.current-1]}
+            onCellEvent={this.updatePixel} />
+        }
+        {previewMode &&
+          <Dimmer active={previewMode} onClick={this.handleClosePreview} page>
+            <Grid
+              className="preview-grid"
+              cells={this.state.cellsArray[this.state.currentPreview-1]}
+              onCellEvent={() => true}/>
+          </Dimmer>
+        }
         <Divider />
         { loading && 
           (<Message icon>

@@ -14,7 +14,7 @@ class ThreadPreview {
       this.index = 0;
     }
     this.that.setState({
-      current: this.index+1
+      currentPreview: this.index+1
     });
     this.index += 1;
     setTimeout(this.run.bind(this), this.delays[this.index-1]);
