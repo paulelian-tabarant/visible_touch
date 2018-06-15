@@ -34,6 +34,7 @@ class PixelGrid extends Component {
       serpentineMode: props.serpentineMode,
       previewMode: false,
       cellsBuffer: null,
+      copySuccessfulMsgActive: false,
     };
   
     this.thread = null;
@@ -212,6 +213,14 @@ class PixelGrid extends Component {
     const { cellsArray, current } = this.state;
     this.setState({
       cellsBuffer: cellsArray[current-1],
+      copySuccessfulMsgActive: true,
+    })
+    setTimeout(this.handleCloseCopyMsg, 1500);
+  }
+
+  handleCloseCopyMsg = () => {
+    this.setState({
+      copySuccessfulMsgActive: false,
     })
   }
 
@@ -230,6 +239,7 @@ class PixelGrid extends Component {
     const loading = this.state.loading;
     const lastUpload = this.state.lastUpload;
     const previewMode = this.state.previewMode;
+    const copySuccessfulMsgActive = this.state.copySuccessfulMsgActive;
     return (
       <div>
         <Button content="Preview Pattern" icon="play" color="orange"
@@ -269,6 +279,16 @@ class PixelGrid extends Component {
             <Message.Content>
               <Message.Header>Please wait</Message.Header>
               Sending frames to the serial...
+            </Message.Content>
+          </Message>)
+        }
+        {
+          copySuccessfulMsgActive &&
+          (<Message info icon>
+            <Icon name='copy' />
+            <Message.Content>
+              <Message.Header>Current pattern copied to the clipboard.</Message.Header>
+              <p>Use <b>CRTL+V</b> to paste it on another frame.</p>
             </Message.Content>
           </Message>)
         }
