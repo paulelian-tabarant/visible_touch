@@ -7,19 +7,22 @@
     "js-file-download": "^0.4.1",
     "pixel-grid-react": "0.0.4",
     "prop-types": "^15.6.1",
-    "react": "^16.3.2",
+    "react": "^16.4.0",
     "react-color": "^2.14.1",
     "react-css": "0.0.2",
-    "react-dom": "^16.3.2",
+    "react-dom": "^16.4.0",
     "react-rangeslider": "^2.2.0",
     "react-scripts": "1.1.4",
     "semantic-ui-css": "^2.3.1",
-    "semantic-ui-react": "^0.80.0"
+    "semantic-ui-react": "^0.80.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "ws": "3.3.2"
   }
 }

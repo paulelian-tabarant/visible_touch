@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Divider, Header, Grid } from 'semantic-ui-react';
+import { Divider, Header, Grid, Segment } from 'semantic-ui-react';
 import ColorPicker from './ColorPicker';
 import GridComponent from './GridComponent';
 import LayoutSliders from './LayoutSliders';
@@ -23,25 +23,32 @@ function getRGBA(color) {
   }
   return RGBAcolor;
 }
-
+Array()
 class MainComponent extends Component {
   constructor(props) {
     super(props);
+    const defaultDelay = 250;
+    let defaultDelays = Array.apply(null, {length: props.frames})
+      .map(() => defaultDelay);
     let RGBAcolors = defaultColors.map((c, i) => getRGBA(c));
     this.state = {
       color: {
         r: '255',
-        g: '255',
-        b: '255',
+        g: '0',
+        b: '0',
         a: '1',
       },
       colorPalette: RGBAcolors,
+      delays: defaultDelays,
       selectedColor: 0,
       layout: props.layout,
       frames: props.frames,
       current: 1,
+      serpentineMode: props.serpentineMode,
+      copySuccessfulMsgActive: false,
     }
     this.changeCurrentColor = this.changeCurrentColor.bind(this);
+    this.changeDelays = this.changeDelays.bind(this);
     this.changeLayout = this.changeLayout.bind(this);
     this.changeCurrentFrame = this.changeCurrentFrame.bind(this);
     this.handleColorPickerClick = this.handleColorPickerClick.bind(this);
@@ -66,51 +73,76 @@ class MainComponent extends Component {
     this.pixelGrid.changeCurrentFrame(current);
   }
 
+  changeDelays(delays) {
+    this.setState({
+      delays: delays
+    });
+    this.pixelGrid.changeDelays(delays);
+  }
+
   handleColorPickerClick(index) {
     this.setState({
       selectedColor: index,
     });
   }
 
+  handleKeyDown = (event) => {
+    this.pixelGrid.handleKeyDown(event); // just dispatches the event to the Pixel grid
+  }
+  
   render() {
-    const defaultDelay = 250;
     return (
-      <div className="main-component">
+      <div className="main-component" onKeyDown={this.handleKeyDown} tabIndex='0'>
         <Header as="h1">Frame Editor</Header>
         {/* <Divider />
         <LayoutSliders
           layout={this.state.layout}
           changeLayout={this.changeLayout}/> */}
         <Divider />
-        <Grid divided='vertically'>
-          <Grid.Row columns={this.state.colorPalette.length}>
-            {this.state.colorPalette.map((color, i) =>
-              <Grid.Column key={i}>
-                <ColorPicker 
-                  index={i}
-                  color={this.state.colorPalette[i]}
-                  changeCurrentColor={this.changeCurrentColor}
-                  selected={i === this.state.selectedColor}
-                  handleColorPickerClick={this.handleColorPickerClick}/>
-              </Grid.Column>)}
+        <Grid divided>
+          <Grid.Row columns="3">
+            <Grid.Column width="4">
+              <FrameSliders
+                delays={this.state.delays}
+                frames={this.state.frames}
+                current={this.state.current}
+                changeCurrentFrame={this.changeCurrentFrame}
+                changeDelays={this.changeDelays}/>
+            </Grid.Column>
+            <Grid.Column width="8">
+              <PixelGrid
+                ref={ref => {this.pixelGrid = ref;}}
+                color={this.state.color}
+                current={this.state.current}
+                delays={this.state.delays}
+                frames={this.state.frames}
+                layout={this.state.layout}
+                serpentineMode={this.state.serpentineMode}/>
+              {/* <GridComponent
+                color={this.state.color}
+                layout={this.state.layout}/> */}
+            </Grid.Column>
+            <Grid.Column width="4">
+              <Segment className="color-palette">
+                <Header as='h2'> Color Palette</Header>
+                <Divider />
+                <Grid divided='vertically'>
+                  <Grid.Row columns={3}>
+                    {this.state.colorPalette.map((color, i) =>
+                      <Grid.Column key={i}>
+                        <ColorPicker 
+                          index={i}
+                          color={this.state.colorPalette[i]}
+                          changeCurrentColor={this.changeCurrentColor}
+                          selected={i === this.state.selectedColor}
+                          handleColorPickerClick={this.handleColorPickerClick}/>
+                      </Grid.Column>)}
+                  </Grid.Row>
+                </Grid>
+              </Segment>
+            </Grid.Column>
           </Grid.Row>
         </Grid>
-        <Divider />
-        <FrameSliders
-          frames={this.state.frames}
-          current={this.state.current}
-          changeCurrentFrame={this.changeCurrentFrame}
-          defaultDelay={defaultDelay}/>
-        <Divider />
-        <PixelGrid
-          ref={ref => {this.pixelGrid = ref;}}
-          color={this.state.color}
-          current={this.state.current}
-          frames={this.state.frames}
-          layout={this.state.layout}/>
-        {/* <GridComponent
-          color={this.state.color}
-          layout={this.state.layout}/> */}
       </div>
     );
   }

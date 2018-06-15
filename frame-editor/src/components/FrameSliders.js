@@ -1,17 +1,16 @@
+import 'react-rangeslider/lib/index.css';
+import '../FrameSliders.css';
 import React, { Component } from 'react';
 import Slider from 'react-rangeslider';
-import { Input, Button } from 'semantic-ui-react'
-import 'react-rangeslider/lib/index.css'
+import { Input, Button, Header, Segment, Divider } from 'semantic-ui-react';
 
 class FrameSliders extends Component {
   constructor(props, context) {
     super(props, context);
-    const { defaultDelay } = this.props;
-    let defaultDelays = new Array(props.frames).fill(defaultDelay);
     this.state = {
       frames: props.frames,
       current: props.current,
-      delays: defaultDelays,
+      delays: props.delays,
       inputValue: "",
     };
   }
@@ -28,12 +27,13 @@ class FrameSliders extends Component {
     const { current, delays, inputValue } = this.state;
     let newDelays = delays.slice();
     if(inputValue === "") return;
-    newDelays[current] = parseInt(inputValue);
-    if(newDelays[current] !== NaN) {
+    newDelays[current-1] = parseInt(inputValue);
+    if(newDelays[current-1] !== NaN) {
       this.setState({
         delays: newDelays,
         inputValue: "",
       });
+      this.props.changeDelays(newDelays);
     }
   }
 
@@ -51,9 +51,11 @@ class FrameSliders extends Component {
 
   render() {
     let { frames, current, delays, inputValue } = this.state;
-    let curFrameDelay = delays[current];
+    let curFrameDelay = delays[current-1];
     return (
-      <div className="slider-group">
+      <Segment className="slider-group">
+        <Header as='h2'>Frame Selector</Header>
+        <Divider />
         <Slider
           min={1}
           max={frames}
@@ -61,9 +63,10 @@ class FrameSliders extends Component {
           orientation="horizontal"
           onChange={this.handleFrameChange}
         />
-        <div className="value">Frame: {current}</div>
+        <Header as='h4' className="value">Frame: {current}</Header>
         <div className="delay-input-group">
-          <Input 
+          <Input
+            fluid
             type="number"
             className="delay-input-field"
             value={inputValue}
@@ -74,7 +77,7 @@ class FrameSliders extends Component {
             <Button className="apply-delay" onClick={this.handleSetDelay}>Apply</Button>
           </Input>
         </div>
-      </div>
+      </Segment>
     )
   }
 }

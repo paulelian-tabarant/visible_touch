@@ -1,8 +1,8 @@
 var SerialPort = require('serialport'); // include the serialport library
 var http = require('http');
 
-//var myPort = new SerialPort("/dev/ttyACM0", {
-var myPort = new SerialPort("COM4", {
+var myPort = new SerialPort("/dev/ttyACM0", {
+// var myPort = new SerialPort("COM4", {
   baudRate: 9600,
   dataBits: 8,
   parity: 'none',
@@ -31,7 +31,7 @@ function openPort() {
 }
 
 function writeData() {
-  console.log("---------");
+  console.log(shouldWrite);
   if (shouldWrite) {
     myPort.write("-1 ");
     for (var i = 0; i < dataToWrite.length; i++) {

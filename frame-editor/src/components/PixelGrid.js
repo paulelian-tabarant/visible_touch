@@ -2,7 +2,8 @@ import axios from 'axios';
 import Grid from 'pixel-grid-react';
 import React, { Component } from 'react';
 import fileDownload from 'js-file-download';
-import { Button, Divider, Message, Icon, Label } from 'semantic-ui-react';
+import { Button, Dimmer, Divider, Message, Icon, Label } from 'semantic-ui-react';
+import ThreadPreview from '../ThreadPreview';
 
 
 function generateGrid(layout) {
@@ -10,7 +11,7 @@ function generateGrid(layout) {
   for (let i = 0; i < layout.horizontal * layout.vertical; i++) {
     cells.push({
       width: 100 / layout.horizontal,
-      color: 'rgba(49,49,49,1)',
+      color: 'rgba(0,0,0,1)',
       id: i
     })
   }
@@ -25,24 +26,27 @@ class PixelGrid extends Component {
     this.state = {
       cellsArray: cellsArray,
       current: props.current,
+      currentPreview: 1,
+      delays: props.delays,
       sent: false,
       loading: false,
       lastUpload: "",
+      serpentineMode: props.serpentineMode,
+      previewMode: false,
+      cellsBuffer: null,
+      copySuccessfulMsgActive: false,
     };
+  
+    this.thread = null;
+
     this.updatePixel = this.updatePixel.bind(this);
     this.handleClear = this.handleClear.bind(this);
     this.handleClearCurrentFrame = this.handleClearCurrentFrame.bind(this);
+    this.handleClosePreview = this.handleClosePreview.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
+    this.handlePreview = this.handlePreview.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.layout !== nextProps.layout){
-      this.setState({
-        cells: generateGrid(nextProps.layout)
-      });
-    }
   }
 
   updatePixel(i) {
@@ -87,13 +91,34 @@ class PixelGrid extends Component {
     this.setState({
       loading: true,
     });
+    console.log(this.state.cellsArray);
     var data = this.state.cellsArray
       .map(cells =>
         cells.map(cell => cell.color.split(/,|\(/).slice(1,4).join()).join()
-      ).join();
-    data = data.split(',');
+      );
+    //serpentine mode
+    var serp = this.state.cellsArray
+    .map((cells, frame) =>
+      cells.map((cell, i) => {
+        var hor = this.props.layout.horizontal;
+        var j = Math.floor(i/hor);
+        if (j % 2 == 0){
+          return cell;
+        }
+        else{
+          return this.state.cellsArray[frame][(j+1)*hor-(i%hor)-1];
+        }
+      })
+    );
+    serp = serp
+      .map(cells =>
+        cells.map(cell => cell.color.split(/,|\(/).slice(1, 4).join()).join()
+      );
+    data = data.join().split(',');
+    serp = serp.join().split(',');
     const dataObject = {
-      data: data.map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
+      data: (this.state.serpentineMode ? serp : data)
+        .map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
       delay: 1000
     };
     axios.request({
@@ -124,6 +149,23 @@ class PixelGrid extends Component {
     fileDownload(JSON.stringify(this.state.cellsArray), 'pattern.json');
   }
 
+  handlePreview() {
+    this.setState({
+      previewMode: true,
+      currentPreview: 1,
+    });
+    this.thread = new ThreadPreview(this, this.state.delays);
+    this.thread.start();
+  }
+
+  handleClosePreview() {
+    this.thread.stop();
+    this.setState({
+      previewMode: false,
+      currentPreview: 1,
+    });
+  }
+
   handleUpload(e) {
     var file = e.target.files[0];
     var reader = new FileReader();
@@ -141,12 +183,67 @@ class PixelGrid extends Component {
     });
   }
 
+  changeDelays(delays) {
+    this.setState({
+      delays: delays
+    });
+  }
+
+  handleKeyDown = (event) => {
+    let ctrlKey = 17,
+        cmdKey = 91,
+        vKey = 86,
+        cKey = 67;
+    let ctrlDown = false, keyCode = event.keyCode;
+    ctrlDown = event.ctrlKey;
+    if(ctrlDown) {
+      console.log('ctrl down');
+      if(keyCode == cKey) {
+        console.log('ctrl+c');
+        this.handleFrameCopy();
+      }
+      else if (keyCode == vKey) {
+        console.log('ctrl+v');
+        this.handleFramePaste();
+      }
+    }
+  }
+
+  handleFrameCopy() {
+    const { cellsArray, current } = this.state;
+    this.setState({
+      cellsBuffer: cellsArray[current-1],
+      copySuccessfulMsgActive: true,
+    })
+    setTimeout(this.handleCloseCopyMsg, 1500);
+  }
+
+  handleCloseCopyMsg = () => {
+    this.setState({
+      copySuccessfulMsgActive: false,
+    })
+  }
+
+  handleFramePaste() {
+    const { cellsArray, current, cellsBuffer } = this.state;
+    let newFrames = cellsArray.slice();
+    newFrames[current-1] = cellsBuffer;
+    console.log(newFrames);
+    this.setState({
+      cellsArray: newFrames,
+    })
+  }
+
   render() {
     const sent = this.state.sent;
     const loading = this.state.loading;
     const lastUpload = this.state.lastUpload;
+    const previewMode = this.state.previewMode;
+    const copySuccessfulMsgActive = this.state.copySuccessfulMsgActive;
     return (
       <div>
+        <Button content="Preview Pattern" icon="play" color="orange"
+          onClick={this.handlePreview}/>
         <Button content="Save Pattern" icon="save" color="yellow"
           onClick={this.handleDownload}/>
         <label htmlFor="file" className="ui violet icon button">
@@ -162,10 +259,19 @@ class PixelGrid extends Component {
         <Button content="Send To Arduino" icon="send" color="blue"
           onClick={this.handleSend}/>
         <Divider />
-        <Grid
-          cells={this.state.cellsArray[this.state.current-1]}
-          onCellEvent={this.updatePixel}
-        />
+        {!previewMode &&
+          <Grid
+            cells={this.state.cellsArray[this.state.current-1]}
+            onCellEvent={this.updatePixel} />
+        }
+        {previewMode &&
+          <Dimmer active={previewMode} onClick={this.handleClosePreview} page>
+            <Grid
+              className="preview-grid"
+              cells={this.state.cellsArray[this.state.currentPreview-1]}
+              onCellEvent={() => true}/>
+          </Dimmer>
+        }
         <Divider />
         { loading && 
           (<Message icon>
@@ -173,6 +279,16 @@ class PixelGrid extends Component {
             <Message.Content>
               <Message.Header>Please wait</Message.Header>
               Sending frames to the serial...
+            </Message.Content>
+          </Message>)
+        }
+        {
+          copySuccessfulMsgActive &&
+          (<Message info icon>
+            <Icon name='copy' />
+            <Message.Content>
+              <Message.Header>Current pattern copied to the clipboard.</Message.Header>
+              <p>Use <b>CRTL+V</b> to paste it on another frame.</p>
             </Message.Content>
           </Message>)
         }

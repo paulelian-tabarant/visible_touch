@@ -2,4 +2,22 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background-color: hsl(160, 40%, 58%);
+}
+
+.ui.segment {
+  background-color: hsl(160, 60%, 58%);
+}
+
+.grid-container:first-child {
+  width: 50vw!important;
+  top: 22vh!important;
+  left: 25vw!important;
+  position: absolute;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgb(88, 88, 88);
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: rgb(88, 88, 88);
 }
