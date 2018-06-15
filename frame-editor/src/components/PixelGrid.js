@@ -231,7 +231,7 @@ class PixelGrid extends Component {
     const lastUpload = this.state.lastUpload;
     const previewMode = this.state.previewMode;
     return (
-      <div onKeyDown={this.handleKeyDown} tabIndex='0'>
+      <div>
         <Button content="Preview Pattern" icon="play" color="orange"
           onClick={this.handlePreview}/>
         <Button content="Save Pattern" icon="save" color="yellow"

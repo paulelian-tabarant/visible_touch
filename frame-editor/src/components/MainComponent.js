@@ -84,10 +84,14 @@ class MainComponent extends Component {
       selectedColor: index,
     });
   }
+
+  handleKeyDown = (event) => {
+    this.pixelGrid.handleKeyDown(event); // just dispatches the event to the Pixel grid
+  }
   
   render() {
     return (
-      <div className="main-component">
+      <div className="main-component" onKeyDown={this.handleKeyDown} tabIndex='0'>
         <Header as="h1">Frame Editor</Header>
         {/* <Divider />
         <LayoutSliders
