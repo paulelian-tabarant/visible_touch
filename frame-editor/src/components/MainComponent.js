@@ -84,7 +84,7 @@ class MainComponent extends Component {
       selectedColor: index,
     });
   }
-
+  
   render() {
     return (
       <div className="main-component">

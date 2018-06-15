@@ -33,6 +33,7 @@ class PixelGrid extends Component {
       lastUpload: "",
       serpentineMode: props.serpentineMode,
       previewMode: false,
+      cellsBuffer: null,
     };
   
     this.thread = null;
@@ -187,13 +188,50 @@ class PixelGrid extends Component {
     });
   }
 
+  handleKeyDown = (event) => {
+    let ctrlKey = 17,
+        cmdKey = 91,
+        vKey = 86,
+        cKey = 67;
+    let ctrlDown = false, keyCode = event.keyCode;
+    ctrlDown = event.ctrlKey;
+    if(ctrlDown) {
+      console.log('ctrl down');
+      if(keyCode == cKey) {
+        console.log('ctrl+c');
+        this.handleFrameCopy();
+      }
+      else if (keyCode == vKey) {
+        console.log('ctrl+v');
+        this.handleFramePaste();
+      }
+    }
+  }
+
+  handleFrameCopy() {
+    const { cellsArray, current } = this.state;
+    this.setState({
+      cellsBuffer: cellsArray[current-1],
+    })
+  }
+
+  handleFramePaste() {
+    const { cellsArray, current, cellsBuffer } = this.state;
+    let newFrames = cellsArray.slice();
+    newFrames[current-1] = cellsBuffer;
+    console.log(newFrames);
+    this.setState({
+      cellsArray: newFrames,
+    })
+  }
+
   render() {
     const sent = this.state.sent;
     const loading = this.state.loading;
     const lastUpload = this.state.lastUpload;
     const previewMode = this.state.previewMode;
     return (
-      <div>
+      <div onKeyDown={this.handleKeyDown} tabIndex='0'>
         <Button content="Preview Pattern" icon="play" color="orange"
           onClick={this.handlePreview}/>
         <Button content="Save Pattern" icon="save" color="yellow"
