@@ -45,7 +45,6 @@ class MainComponent extends Component {
       frames: props.frames,
       current: 1,
       serpentineMode: props.serpentineMode,
-      copySuccessfulMsgActive: false,
     }
     this.changeCurrentColor = this.changeCurrentColor.bind(this);
     this.changeDelays = this.changeDelays.bind(this);
