@@ -25,6 +25,8 @@ class PixelGrid extends Component {
       .map(i => generateGrid(props.layout));
     this.state = {
       cellsArray: cellsArray,
+      previousCellsState: cellsArray[props.current],
+      newDrawing: true,
       current: props.current,
       currentPreview: 1,
       delays: props.delays,
@@ -50,8 +52,15 @@ class PixelGrid extends Component {
   }
 
   updatePixel(i) {
-    // console.log('Update pixel', i);
     const state = this.state;
+    // copies last frame state in a buffer if the user wants to discard
+    if(state.newDrawing) {
+      this.setState({
+        newDrawing: false,
+        previousCellsState: state.cellsArray[state.current-1],
+      })
+    }
+    // updating the pixel color
     const color = `rgba(${ this.props.color.r },`+
       `${ this.props.color.g },`+
       `${ this.props.color.b },`+
@@ -68,6 +77,23 @@ class PixelGrid extends Component {
     cellsArray[state.current-1] = cells;
     this.setState({
       cellsArray: cellsArray,
+    });
+  }
+
+  // detects the first editing click of the user for drag & drop
+  endDrawing() {
+    this.setState({
+      newDrawing: true,
+    });
+  }
+
+  discardLastDrawing() {
+    const { cellsArray, previousCellsState, current } = this.state;
+    let newArray = cellsArray.slice();
+    // retrieving pixel grid state before last user operation
+    newArray[current-1] = previousCellsState;
+    this.setState({
+      cellsArray: newArray,
     });
   }
 
@@ -208,10 +234,13 @@ class PixelGrid extends Component {
     const { cellsArray, current, cellsBuffer } = this.state;
     let newFrames = cellsArray.slice();
     newFrames[current-1] = cellsBuffer;
-    console.log(newFrames);
     this.setState({
       cellsArray: newFrames,
     })
+  }
+
+  discard() {
+
   }
 
   render() {

@@ -88,6 +88,7 @@ class MainComponent extends Component {
   handleKeyDown = (event) => {
     let vKey = 86,
         cKey = 67,
+        zKey = 90,
         leftArrowKey = 37,
         rightArrowKey = 39;
     let keyCode = event.keyCode, ctrlDown = event.ctrlKey;
@@ -97,6 +98,9 @@ class MainComponent extends Component {
       }
       else if (keyCode == vKey) {
         this.pixelGrid.handleFramePaste();
+      }
+      else if (keyCode == zKey) {
+        this.pixelGrid.discardLastDrawing();
       }
     }
     else {
@@ -108,10 +112,17 @@ class MainComponent extends Component {
       }
     }
   }
+
+  handleMouseUp = (event) => {
+    this.pixelGrid.endDrawing();
+  }
   
   render() {
     return (
-      <div className="main-component" onKeyDown={this.handleKeyDown} tabIndex='0'>
+      <div className="main-component" 
+           onKeyDown={this.handleKeyDown} 
+           onMouseUp={this.handleMouseUp}
+           tabIndex='0'>
         <Header as="h1">Frame Editor</Header>
         {/* <Divider />
         <LayoutSliders
