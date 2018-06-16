@@ -86,7 +86,27 @@ class MainComponent extends Component {
   }
 
   handleKeyDown = (event) => {
-    this.pixelGrid.handleKeyDown(event); // just dispatches the event to the Pixel grid
+    let vKey = 86,
+        cKey = 67,
+        leftArrowKey = 37,
+        rightArrowKey = 39;
+    let keyCode = event.keyCode, ctrlDown = event.ctrlKey;
+    if(ctrlDown) {
+      if(keyCode == cKey) {
+        this.pixelGrid.handleFrameCopy();
+      }
+      else if (keyCode == vKey) {
+        this.pixelGrid.handleFramePaste();
+      }
+    }
+    else {
+      if(keyCode == leftArrowKey) {
+        this.frameSliders.decrement();
+      }
+      else if (keyCode == rightArrowKey) {
+        this.frameSliders.increment();
+      }
+    }
   }
   
   render() {
@@ -102,6 +122,7 @@ class MainComponent extends Component {
           <Grid.Row columns="3">
             <Grid.Column width="4">
               <FrameSliders
+                ref={ref => {this.frameSliders = ref;}}
                 delays={this.state.delays}
                 frames={this.state.frames}
                 current={this.state.current}

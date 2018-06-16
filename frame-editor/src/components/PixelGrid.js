@@ -189,26 +189,6 @@ class PixelGrid extends Component {
     });
   }
 
-  handleKeyDown = (event) => {
-    let ctrlKey = 17,
-        cmdKey = 91,
-        vKey = 86,
-        cKey = 67;
-    let ctrlDown = false, keyCode = event.keyCode;
-    ctrlDown = event.ctrlKey;
-    if(ctrlDown) {
-      console.log('ctrl down');
-      if(keyCode == cKey) {
-        console.log('ctrl+c');
-        this.handleFrameCopy();
-      }
-      else if (keyCode == vKey) {
-        console.log('ctrl+v');
-        this.handleFramePaste();
-      }
-    }
-  }
-
   handleFrameCopy() {
     const { cellsArray, current } = this.state;
     this.setState({

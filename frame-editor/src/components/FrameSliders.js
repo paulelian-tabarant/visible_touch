@@ -49,6 +49,18 @@ class FrameSliders extends Component {
     }
   }
 
+  increment = () => {
+    const { current } = this.state;
+    if(current < this.props.frames)
+      this.handleFrameChange(current + 1);
+  }
+
+  decrement = () => {
+    const { current } = this.state;
+    if(current > 1)
+      this.handleFrameChange(current - 1);
+  }
+
   render() {
     let { frames, current, delays, inputValue } = this.state;
     let curFrameDelay = delays[current-1];
