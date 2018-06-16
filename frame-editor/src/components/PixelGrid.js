@@ -5,6 +5,7 @@ import fileDownload from 'js-file-download';
 import { Button, Dimmer, Divider, Message, Icon, Label } from 'semantic-ui-react';
 import ThreadPreview from '../ThreadPreview';
 
+const discardBufferSize = 10;
 
 function generateGrid(layout) {
   const cells = []
@@ -18,14 +19,35 @@ function generateGrid(layout) {
   return cells
 };
 
+class CellsBuffer {
+  constructor() {
+    this.data = new Array();
+  }
+
+  getLast() {
+    if(this.data.length > 0)
+      return this.data.pop();
+    else 
+      return null;
+  }
+
+  add(cells) {
+    this.data.push(cells);
+  }
+}
+
 class PixelGrid extends Component {
   constructor(props) {
     super(props);
     var cellsArray = Array.apply(null, {length: props.frames})
       .map(i => generateGrid(props.layout));
+    let previousCellsState = new Array(props.frames);
+    for (let i=0; i < props.frames; i++) {
+      previousCellsState[i] = new CellsBuffer();
+    }
     this.state = {
       cellsArray: cellsArray,
-      previousCellsState: cellsArray[props.current],
+      previousCellsState: previousCellsState,
       newDrawing: true,
       current: props.current,
       currentPreview: 1,
@@ -51,13 +73,24 @@ class PixelGrid extends Component {
     this.handleUpload = this.handleUpload.bind(this);
   }
 
+  saveCellsState() {
+    const { previousCellsState, current, cellsArray } = this.state;
+    let lastStatesBuffer = previousCellsState.slice();
+    let currentBuffer = lastStatesBuffer[current-1];
+    currentBuffer.add(cellsArray[current-1]);
+    lastStatesBuffer[current-1] = currentBuffer;
+    this.setState({
+      previousCellsState: lastStatesBuffer,
+    })
+  }
+
   updatePixel(i) {
     const state = this.state;
     // copies last frame state in a buffer if the user wants to discard
     if(state.newDrawing) {
+      this.saveCellsState();
       this.setState({
         newDrawing: false,
-        previousCellsState: state.cellsArray[state.current-1],
       })
     }
     // updating the pixel color
@@ -89,12 +122,15 @@ class PixelGrid extends Component {
 
   discardLastDrawing() {
     const { cellsArray, previousCellsState, current } = this.state;
-    let newArray = cellsArray.slice();
     // retrieving pixel grid state before last user operation
-    newArray[current-1] = previousCellsState;
-    this.setState({
-      cellsArray: newArray,
-    });
+    let lastState = previousCellsState[current-1].getLast();
+    if(lastState != null) {
+      let newArray = cellsArray.slice();
+      newArray[current-1] = lastState;
+      this.setState({
+        cellsArray: newArray,
+      });
+    }
   }
 
   handleClear() {
@@ -237,6 +273,7 @@ class PixelGrid extends Component {
     this.setState({
       cellsArray: newFrames,
     })
+    this.saveCellsState();
   }
 
   discard() {
