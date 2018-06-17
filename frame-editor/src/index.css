@@ -21,3 +21,7 @@ body {
   border-left-width: 1px;
   border-left-color: rgb(88, 88, 88);
 }
+
+input {
+  background-color : hsl(160, 76%, 80%)!important;
+}

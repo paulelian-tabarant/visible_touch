@@ -13,6 +13,7 @@ class FrameSliders extends Component {
       delays: props.delays,
       inputValue: "",
     };
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   handleFrameChange = (value) => {
@@ -61,6 +62,13 @@ class FrameSliders extends Component {
       this.handleFrameChange(current - 1);
   }
 
+  handleUpload(delays) {
+    this.setState({
+      delays: delays,
+      frames: delays.length,
+    });
+  }
+
   render() {
     let { frames, current, delays, inputValue } = this.state;
     let curFrameDelay = delays[current-1];
@@ -75,7 +83,7 @@ class FrameSliders extends Component {
           orientation="horizontal"
           onChange={this.handleFrameChange}
         />
-        <Header as='h4' className="value">Frame: {current}</Header>
+        <Header as='h4' className="value">Frame: {current}/{frames}</Header>
         <div className="delay-input-group">
           <Input
             fluid

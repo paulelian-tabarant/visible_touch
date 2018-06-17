@@ -39,14 +39,12 @@ class CellsBuffer {
 class PixelGrid extends Component {
   constructor(props) {
     super(props);
-    var cellsArray = Array.apply(null, {length: props.frames})
-      .map(i => generateGrid(props.layout));
     let previousCellsState = new Array(props.frames);
     for (let i=0; i < props.frames; i++) {
       previousCellsState[i] = new CellsBuffer();
     }
     this.state = {
-      cellsArray: cellsArray,
+      cellsArray: props.cellsArray,
       previousCellsState: previousCellsState,
       newDrawing: true,
       current: props.current,
@@ -208,7 +206,11 @@ class PixelGrid extends Component {
   }
 
   handleDownload() {
-    fileDownload(JSON.stringify(this.state.cellsArray), 'pattern.json');
+    fileDownload(JSON.stringify({
+      layout: this.props.layout,
+      delays: this.state.delays,
+      cellsArray: this.state.cellsArray,
+    }), 'pattern.json');
   }
 
   handlePreview() {
@@ -228,15 +230,22 @@ class PixelGrid extends Component {
     });
   }
 
-  handleUpload(e) {
-    var file = e.target.files[0];
-    var reader = new FileReader();
-    reader.onload = (event) => {
-      this.setState({
-        cellsArray: JSON.parse(event.target.result)
-      });
-    }
-    reader.readAsText(file);
+  // handleUpload(e) {
+  //   var file = e.target.files[0];
+  //   var reader = new FileReader();
+  //   reader.onload = (event) => {
+  //     this.setState({
+  //       cellsArray: JSON.parse(event.target.result)
+  //     });
+  //   }
+  //   reader.readAsText(file);
+  // }
+
+  handleUpload(obj) {
+    this.setState({
+      delays: obj.delays,
+      cellsArray: obj.cellsArray,
+    })
   }
 
   changeCurrentFrame(current) {
@@ -288,7 +297,7 @@ class PixelGrid extends Component {
     const copySuccessfulMsgActive = this.state.copySuccessfulMsgActive;
     return (
       <div>
-        <Button content="Preview Pattern" icon="play" color="orange"
+        {/* <Button content="Preview Pattern" icon="play" color="orange"
           onClick={this.handlePreview}/>
         <Button content="Save Pattern" icon="save" color="yellow"
           onClick={this.handleDownload}/>
@@ -297,7 +306,7 @@ class PixelGrid extends Component {
             &nbsp; Load Pattern </label>
         <input type="file" id="file" style={{display:"none"}}
           onChange={this.handleUpload}/>
-        <Divider />
+        <Divider /> */}
         <Button content="New" icon="file outline" color="green"
           onClick={this.handleClear}/>
         <Button content="Clear Current Frame" icon="close" color="red"

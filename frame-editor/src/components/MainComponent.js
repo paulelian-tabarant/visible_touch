@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Divider, Header, Grid, Segment } from 'semantic-ui-react';
+import { Button, Divider, Header, Grid, Segment } from 'semantic-ui-react';
 import ColorPicker from './ColorPicker';
 import GridComponent from './GridComponent';
 import LayoutSliders from './LayoutSliders';
@@ -23,7 +23,19 @@ function getRGBA(color) {
   }
   return RGBAcolor;
 }
-Array()
+
+function generateGrid(layout) {
+  const cells = []
+  for (let i = 0; i < layout.horizontal * layout.vertical; i++) {
+    cells.push({
+      width: 100 / layout.horizontal,
+      color: 'rgba(0,0,0,1)',
+      id: i
+    })
+  }
+  return cells
+};
+
 class MainComponent extends Component {
   constructor(props) {
     super(props);
@@ -31,6 +43,8 @@ class MainComponent extends Component {
     let defaultDelays = Array.apply(null, {length: props.frames})
       .map(() => defaultDelay);
     let RGBAcolors = defaultColors.map((c, i) => getRGBA(c));
+    var cellsArray = Array.apply(null, {length: props.frames})
+      .map(i => generateGrid(props.layout));
     this.state = {
       color: {
         r: '255',
@@ -38,6 +52,7 @@ class MainComponent extends Component {
         b: '0',
         a: '1',
       },
+      cellsArray: cellsArray,
       colorPalette: RGBAcolors,
       delays: defaultDelays,
       selectedColor: 0,
@@ -51,6 +66,9 @@ class MainComponent extends Component {
     this.changeLayout = this.changeLayout.bind(this);
     this.changeCurrentFrame = this.changeCurrentFrame.bind(this);
     this.handleColorPickerClick = this.handleColorPickerClick.bind(this);
+    this.handleDownload = this.handleDownload.bind(this);
+    this.handlePreview = this.handlePreview.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   changeCurrentColor(color) {
@@ -116,7 +134,32 @@ class MainComponent extends Component {
   handleMouseUp = (event) => {
     this.pixelGrid.endDrawing();
   }
-  
+
+  handleDownload() {
+    this.pixelGrid.handleDownload();
+  }
+
+  handlePreview() {
+    this.pixelGrid.handlePreview();
+  }
+
+  handleUpload(e) {
+    var file = e.target.files[0];
+    var reader = new FileReader();
+    reader.onload = (event) => {
+      var obj = JSON.parse(event.target.result);
+      this.setState({
+        layout: obj.layout,
+        delays: obj.delays,
+        frames: obj.delays.length,
+        cellsArray: obj.cellsArray,
+      });
+      this.pixelGrid.handleUpload(obj);
+      this.frameSliders.handleUpload(obj.delays);
+    }
+    reader.readAsText(file);
+  }
+
   render() {
     return (
       <div className="main-component" 
@@ -141,8 +184,19 @@ class MainComponent extends Component {
                 changeDelays={this.changeDelays}/>
             </Grid.Column>
             <Grid.Column width="8">
+              <Button content="Preview Pattern" icon="play" color="orange"
+                onClick={this.handlePreview}/>
+              <Button content="Save Pattern" icon="save" color="yellow"
+                onClick={this.handleDownload}/>
+              <label htmlFor="file" className="ui violet icon button">
+                  <i className="upload icon"></i>
+                  &nbsp; Load Pattern </label>
+              <input type="file" id="file" style={{display:"none"}}
+                onChange={this.handleUpload}/>
+              <Divider />
               <PixelGrid
                 ref={ref => {this.pixelGrid = ref;}}
+                cellsArray={this.state.cellsArray}
                 color={this.state.color}
                 current={this.state.current}
                 delays={this.state.delays}
