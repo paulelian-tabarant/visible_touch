@@ -151,7 +151,6 @@ class PixelGrid extends Component {
     this.setState({
       loading: true,
     });
-    console.log(this.state.cellsArray);
     var data = this.state.cellsArray
       .map(cells =>
         cells.map(cell => cell.color.split(/,|\(/).slice(1,4).join()).join()
@@ -162,7 +161,7 @@ class PixelGrid extends Component {
       cells.map((cell, i) => {
         var hor = this.props.layout.horizontal;
         var j = Math.floor(i/hor);
-        if (j % 2 == 0){
+        if (j % 2 === this.props.layout.vertical % 2){
           return cell;
         }
         else{
@@ -170,16 +169,20 @@ class PixelGrid extends Component {
         }
       })
     );
+    serp = serp.map((line) => line.reverse());
     serp = serp
       .map(cells =>
         cells.map(cell => cell.color.split(/,|\(/).slice(1, 4).join()).join()
       );
     data = data.join().split(',');
     serp = serp.join().split(',');
+    console.log(serp);
     const dataObject = {
       data: (this.state.serpentineMode ? serp : data)
         .map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
-      delay: 1000
+      delays: this.state.delays,
+      frames: this.state.frames,
+      leds: this.props.horizontal*this.props.layout.vertical,
     };
     axios.request({
       method: 'post',
@@ -229,17 +232,6 @@ class PixelGrid extends Component {
       currentPreview: 1,
     });
   }
-
-  // handleUpload(e) {
-  //   var file = e.target.files[0];
-  //   var reader = new FileReader();
-  //   reader.onload = (event) => {
-  //     this.setState({
-  //       cellsArray: JSON.parse(event.target.result)
-  //     });
-  //   }
-  //   reader.readAsText(file);
-  // }
 
   handleUpload(obj) {
     this.setState({
@@ -297,16 +289,6 @@ class PixelGrid extends Component {
     const copySuccessfulMsgActive = this.state.copySuccessfulMsgActive;
     return (
       <div>
-        {/* <Button content="Preview Pattern" icon="play" color="orange"
-          onClick={this.handlePreview}/>
-        <Button content="Save Pattern" icon="save" color="yellow"
-          onClick={this.handleDownload}/>
-        <label htmlFor="file" className="ui violet icon button">
-            <i className="upload icon"></i>
-            &nbsp; Load Pattern </label>
-        <input type="file" id="file" style={{display:"none"}}
-          onChange={this.handleUpload}/>
-        <Divider /> */}
         <Button content="New" icon="file outline" color="green"
           onClick={this.handleClear}/>
         <Button content="Clear Current Frame" icon="close" color="red"
