@@ -11,7 +11,8 @@ function connectArduino() {
     ports.forEach(function(port) {
       count += 1;
       pm = port['manufacturer'];
-      if (typeof pm !== 'undefined' && pm.includes('arduino')) {
+      if (typeof pm !== 'undefined' && 
+          (pm.includes('arduino') || pm.includes('Arduino'))) {
         console.log(port.comName.toString());
         myPort = new SerialPort(port.comName.toString(), {
           baudRate: 115200,
