@@ -2,11 +2,11 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background-color: hsl(160, 40%, 58%);
+  background-color: hsl(199, 48%, 69%);
 }
 
 .ui.segment {
-  background-color: hsl(160, 60%, 58%);
+  background-color: hsl(199, 70%, 69%);
 }
 
 .grid-container:first-child {
@@ -23,11 +23,23 @@ body {
 }
 
 input {
-  background-color : hsl(160, 76%, 80%)!important;
+  background-color: hsl(199, 48%, 69%) !important;
 }
 
 .layout-modal {
   position: absolute;
   top: 46vh;
   left: 25vw;
+}
+
+.button {
+  background-color: rgb(26, 144, 165)!important;
+}
+
+.header {
+  color: rgb(18, 85, 97)!important;
+}
+
+.value {
+  color: black!important;
 }

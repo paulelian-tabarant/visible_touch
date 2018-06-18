@@ -69,6 +69,14 @@ class FrameSliders extends Component {
     });
   }
 
+  reRenderFrames(frames, delays) {
+    this.setState({
+      delays: delays,
+      frames: frames,
+      current: 1,
+    })
+  }
+
   render() {
     let { frames, current, delays, inputValue } = this.state;
     let curFrameDelay = delays[current-1];
@@ -94,7 +102,8 @@ class FrameSliders extends Component {
             onChange={this.handleInputChange}
             onKeyDown={this.handleInputKey}>
             <input />
-            <Button className="apply-delay" onClick={this.handleSetDelay}>Apply</Button>
+            <Button className="apply-delay" color='purple'
+              onClick={this.handleSetDelay}>Apply</Button>
           </Input>
         </div>
       </Segment>

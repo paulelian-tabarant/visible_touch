@@ -1,4 +1,3 @@
-.slider-group {
-  margin-left: 1vw!important;
-  top: 10vh;
+::placeholder {
+  color: black!important;
 }

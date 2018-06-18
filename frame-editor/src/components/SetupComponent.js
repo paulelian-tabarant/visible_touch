@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import { Divider, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import MainComponent from './MainComponent';
-import { Form, Header, Grid, Divider } from 'semantic-ui-react';
 
 class SetupComponent extends Component {
   constructor(props) {
@@ -9,12 +9,12 @@ class SetupComponent extends Component {
       frames: 5,
       horizontal: 10,
       vertical: 6,
-      setupDone: false,
       serpentineMode: true,
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeRadio = this.handleChangeRadio.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   handleChange(e, { name, value }) {
@@ -31,39 +31,41 @@ class SetupComponent extends Component {
 
   handleSubmit() {
     const { horizontal, vertical, frames } = this.state;
+    var layout = {
+      horizontal: horizontal,
+      vertical: vertical,
+    };
     this.setState({
-      setupDone: true,
-      layout: {
-        horizontal: horizontal,
-        vertical: vertical,
-      },
+      layout: layout,
       frames: frames,
-    })
+    });
+    this.mainComponent.reRender(frames, layout);
+  }
+
+  handleUpload(obj) {
+    this.setState({
+      frames: obj.delays.length,
+      horizontal: obj.layout.horizontal,
+      vertical: obj.layout.vertical,
+    });
   }
 
   render() {
-    const { setupDone, horizontal, vertical, frames, serpentineMode } = this.state;
+    const { horizontal, vertical, frames, serpentineMode } = this.state;
     const layout = {
       horizontal: horizontal,
       vertical: vertical,
     };
     return (
       <div className="setup-container">
-        {setupDone &&
-          <MainComponent
-            layout={layout}
-            frames={frames}
-            serpentineMode={serpentineMode}/>
-        }
-        {!setupDone &&
-        <div>
-          <Header as='h1'>Layout of the LED panel</Header>
-          <Divider />
-            <Grid>
-              <Grid.Row columns="3">
-                <Grid.Column width="4">
-                </Grid.Column>
-                <Grid.Column width="8">
+        <Header as='h1'>Frame Editor</Header>
+        <Divider />
+          <Grid divided padded>
+            <Grid.Row columns="2">
+              <Grid.Column width="4" className='left-panel'>
+                <Segment>
+                  <Header as='h2'>Layout of the LED panel</Header>
+                  <Divider />
                   <Form onSubmit={this.handleSubmit}>
                     <Form.Group unstackable widths="equal">
                       <Form.Input
@@ -103,15 +105,20 @@ class SetupComponent extends Component {
                         onChange={this.handleChange}
                         width="4" />
                     </Form.Group>
-                    <Form.Button content="Start !" />
+                    <Form.Button color='purple' content="Apply Changes" />
                   </Form>
-                </Grid.Column>
-                <Grid.Column width="4">
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-        </div>
-        }
+                </Segment>
+              </Grid.Column>
+              <Grid.Column width="12">
+                <MainComponent
+                  ref={ref => {this.mainComponent = ref;}}
+                  layout={layout}
+                  frames={frames}
+                  handleUpload={this.handleUpload}
+                  serpentineMode={serpentineMode}/>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
       </div>
     )
   }

@@ -67,6 +67,8 @@ class PixelGrid extends Component {
     this.handleDownload = this.handleDownload.bind(this);
     this.handlePreview = this.handlePreview.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
+    this.reRenderLayout = this.reRenderLayout.bind(this);
+    this.getCellsArray = this.getCellsArray.bind(this);
   }
 
   saveCellsState() {
@@ -174,7 +176,6 @@ class PixelGrid extends Component {
       );
     data = data.join().split(',');
     serp = serp.join().split(',');
-    console.log(serp);
     const dataObject = {
       data: (this.state.serpentineMode ? serp : data)
         .map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
@@ -188,9 +189,7 @@ class PixelGrid extends Component {
       params: {
         headers: {'content-type': 'application/x-www-form-urlencoded'}
       }
-    }).then(res => {
-      console.log(res);
-      console.log(res.data);
+    }).then(() => {
       var date = new Date();
       this.setState({
         loading: false,
@@ -274,8 +273,18 @@ class PixelGrid extends Component {
     this.saveCellsState();
   }
 
-  discard() {
+  reRenderLayout(cellsArray, layout, frames, delays) {
+    this.setState({
+      cellsArray: cellsArray,
+      layout: layout,
+      frames: frames,
+      delays: delays,
+      current: 1,
+    });
+  }
 
+  getCellsArray() {
+    return this.state.cellsArray;
   }
 
   render() {

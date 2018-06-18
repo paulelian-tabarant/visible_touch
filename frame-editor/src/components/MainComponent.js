@@ -35,10 +35,11 @@ function generateGrid(layout) {
   return cells
 };
 
+const defaultDelay = 250;
+
 class MainComponent extends Component {
   constructor(props) {
     super(props);
-    const defaultDelay = 250;
     let defaultDelays = Array.apply(null, {length: props.frames})
       .map(() => defaultDelay);
     let RGBAcolors = defaultColors.map((c, i) => getRGBA(c));
@@ -69,6 +70,7 @@ class MainComponent extends Component {
     this.handleDownload = this.handleDownload.bind(this);
     this.handlePreview = this.handlePreview.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
+    this.reRender = this.reRender.bind(this);
   }
 
   changeCurrentColor(color) {
@@ -156,8 +158,63 @@ class MainComponent extends Component {
       });
       this.pixelGrid.handleUpload(obj);
       this.frameSliders.handleUpload(obj.delays);
+      this.props.handleUpload(obj);
     }
     reader.readAsText(file);
+  }
+
+  reRender(frames, layout) {
+    var i, delays, cellsArray;
+    if (layout.horizontal !== this.state.layout.horizontal ||
+          layout.vertical !== this.state.layout.vertical) {
+      delays = this.state.delays;
+      cellsArray = Array.apply(null, {length: frames})
+        .map(i => generateGrid(layout));
+      if (frames > this.state.frames) {
+        for (i = 0; i < frames-this.state.frames; i++) {
+          delays.push(defaultDelay);
+        }
+      }
+      else {
+        for (i = 0; i < this.state.frames-frames; i++) {
+          delays.pop();
+        }
+      }
+      this.setState({
+        cellsArray: cellsArray,
+        delays: delays,
+        frames: frames,
+        layout: layout,
+        current: 1,
+      });
+      this.pixelGrid.reRenderLayout(cellsArray, layout, frames, delays);
+      this.frameSliders.reRenderFrames(frames, delays);
+    }
+    else if (frames !== this.state.frames) {
+      delays = this.state.delays;
+      cellsArray = this.pixelGrid.getCellsArray();
+      var defaultGrid = generateGrid(layout);
+      if (frames > this.state.frames) {
+        for (i = 0; i < frames-this.state.frames; i++) {
+          delays.push(defaultDelay);
+          cellsArray.push(defaultGrid);
+        }
+      }
+      else {
+        for (i = 0; i < this.state.frames-frames; i++) {
+          delays.pop();
+          cellsArray.pop();
+        }
+      }
+      this.frameSliders.reRenderFrames(frames, delays);
+      this.pixelGrid.reRenderLayout(cellsArray, layout, frames);
+      this.setState({
+        frames: frames,
+        delays: delays,
+        cellsArray: cellsArray,
+        current: 1,
+      });
+    }
   }
 
   render() {
@@ -166,20 +223,9 @@ class MainComponent extends Component {
            onKeyDown={this.handleKeyDown} 
            onMouseUp={this.handleMouseUp}
            tabIndex='0'>
-        <Header as="h1">Frame Editor</Header>
-        <Divider />
         <Grid divided>
-          <Grid.Row columns="3">
-            <Grid.Column width="4">
-              <FrameSliders
-                ref={ref => {this.frameSliders = ref;}}
-                delays={this.state.delays}
-                frames={this.state.frames}
-                current={this.state.current}
-                changeCurrentFrame={this.changeCurrentFrame}
-                changeDelays={this.changeDelays}/>
-            </Grid.Column>
-            <Grid.Column width="8">
+          <Grid.Row columns="2">
+            <Grid.Column width="11">
               <Button content="Preview Pattern" icon="play" color="orange"
                 onClick={this.handlePreview}/>
               <Button content="Save Pattern" icon="save" color="yellow"
@@ -200,7 +246,14 @@ class MainComponent extends Component {
                 layout={this.state.layout}
                 serpentineMode={this.state.serpentineMode}/>
             </Grid.Column>
-            <Grid.Column width="4">
+            <Grid.Column width="5">
+              <FrameSliders
+                ref={ref => {this.frameSliders = ref;}}
+                delays={this.state.delays}
+                frames={this.state.frames}
+                current={this.state.current}
+                changeCurrentFrame={this.changeCurrentFrame}
+                changeDelays={this.changeDelays}/>
               <Segment className="color-palette">
                 <Header as='h2'> Color Palette</Header>
                 <Divider />
