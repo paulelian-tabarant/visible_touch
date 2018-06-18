@@ -5,8 +5,6 @@ import fileDownload from 'js-file-download';
 import { Button, Dimmer, Divider, Message, Icon, Label } from 'semantic-ui-react';
 import ThreadPreview from '../ThreadPreview';
 
-const discardBufferSize = 10;
-
 function generateGrid(layout) {
   const cells = []
   for (let i = 0; i < layout.horizontal * layout.vertical; i++) {
@@ -21,7 +19,7 @@ function generateGrid(layout) {
 
 class CellsBuffer {
   constructor() {
-    this.data = new Array();
+    this.data = [];
   }
 
   getLast() {
@@ -181,7 +179,6 @@ class PixelGrid extends Component {
       data: (this.state.serpentineMode ? serp : data)
         .map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
       delays: this.state.delays,
-      frames: this.state.frames,
       leds: this.props.horizontal*this.props.layout.vertical,
     };
     axios.request({
@@ -282,7 +279,6 @@ class PixelGrid extends Component {
   }
 
   render() {
-    const sent = this.state.sent;
     const loading = this.state.loading;
     const lastUpload = this.state.lastUpload;
     const previewMode = this.state.previewMode;

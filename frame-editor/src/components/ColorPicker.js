@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, Label, Icon, Dimmer, Segment } from 'semantic-ui-react'
+import { Icon, Dimmer } from 'semantic-ui-react'
 import { SketchPicker } from 'react-color';
 import reactCSS from 'reactcss';
 import '../ColorPicker.css';

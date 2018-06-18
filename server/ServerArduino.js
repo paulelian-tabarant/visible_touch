@@ -1,8 +1,8 @@
 var SerialPort = require('serialport'); // include the serialport library
 var http = require('http');
 
-// var myPort = new SerialPort("/dev/ttyACM0", {
-var myPort = new SerialPort("COM4", {
+var myPort = new SerialPort("/dev/ttyACM0", {
+// var myPort = new SerialPort("COM4", {
   baudRate: 115200,
   dataBits: 8,
   parity: 'none',
@@ -32,7 +32,7 @@ function openPort() {
     shouldWrite = false;
   });
 
-  writeInterval = setInterval(queryArduino, 4000);
+  writeInterval = setInterval(queryArduino, 1000);
 }
 
 function queryArduino(){
@@ -46,11 +46,11 @@ function queryArduino(){
 
 function writeData() {
   //var stringToSend = "<";
-  var stringToSend = "60,";
-  console.log(delay);
-  stringToSend += delay.length.toString() + ",";
-  for(var i = 0; i < delay.length; i++){
-    stringToSend += delay[i].toString() + ",";
+  var stringToSend = numLeds.toString()+",";
+  console.log(delays);
+  stringToSend += delays.length.toString() + ",";
+  for(var i = 0; i < delays.length; i++){
+    stringToSend += delays[i].toString() + ",";
   }
   for (var i = 0; i < dataToWrite.length-1; i++) {
     stringToSend += dataToWrite[i].toString() + ",";
@@ -83,8 +83,8 @@ var serv = http.createServer((req, res) => {
     req.on('end', () => {
       obj = JSON.parse(body);
       dataToWrite = obj.data;
-      delay = obj.delay;
-      numLeds = obj.numLeds;
+      delays = obj.delays;
+      numLeds = obj.leds;
       startWriting();
       res.write(JSON.stringify(obj));
       checkInterval = setInterval(checkWriting,200);

@@ -25,3 +25,9 @@ body {
 input {
   background-color : hsl(160, 76%, 80%)!important;
 }
+
+.layout-modal {
+  position: absolute;
+  top: 46vh;
+  left: 25vw;
+}

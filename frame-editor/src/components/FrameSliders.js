@@ -28,8 +28,8 @@ class FrameSliders extends Component {
     const { current, delays, inputValue } = this.state;
     let newDelays = delays.slice();
     if(inputValue === "") return;
-    newDelays[current-1] = parseInt(inputValue);
-    if(newDelays[current-1] !== NaN) {
+    newDelays[current-1] = parseInt(inputValue, 10);
+    if(!isNaN(newDelays[current-1])) {
       this.setState({
         delays: newDelays,
         inputValue: "",
@@ -45,7 +45,7 @@ class FrameSliders extends Component {
   }
 
   handleInputKey = (event) => {
-    if(event.keyCode == 13) {
+    if(event.keyCode === 13) {
       this.handleSetDelay();
     }
   }

@@ -30,7 +30,7 @@ class SetupComponent extends Component {
   }
 
   handleSubmit() {
-    const { setupDone, horizontal, vertical, frames } = this.state;
+    const { horizontal, vertical, frames } = this.state;
     this.setState({
       setupDone: true,
       layout: {
