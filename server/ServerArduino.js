@@ -24,32 +24,42 @@ function openPort() {
   //console.log('baud rate: ' + myPort.options.baudRate);
 
   myPort.on('data', function (data) {
-    dataReceived += data.toString();
+    var dataString = data.toString();
+    dataReceived += dataString;
+    if (dataString == "y") {
+      writeData();
+    }
     shouldWrite = false;
   });
 
-  writeInterval = setInterval(writeData, 4000);
+  writeInterval = setInterval(queryArduino, 4000);
 }
 
-function writeData() {
+function queryArduino(){
   console.log(dataReceived);
   dataReceived = "";
   console.log(shouldWrite);
   if (shouldWrite) {
-    var stringToSend = "<";
-    stringToSend += "60,";
-    stringToSend += delay.length.toString() + ",";
-    for(var i = 0; i < delay.length; i++){
-      stringToSend += delay[i].toString() + ",";
-    }
-    for (var i = 0; i < dataToWrite.length-1; i++) {
-      stringToSend += dataToWrite[i].toString() + ",";
-    }
-    stringToSend += dataToWrite[dataToWrite.length-1].toString();
-    stringToSend += ">";
-    console.log(stringToSend);
-    myPort.write(stringToSend);
+    myPort.write("<");
   }
+}
+
+function writeData() {
+  //var stringToSend = "<";
+  var stringToSend = "60,";
+  console.log(delay);
+  stringToSend += delay.length.toString() + ",";
+  for(var i = 0; i < delay.length; i++){
+    stringToSend += delay[i].toString() + ",";
+  }
+  for (var i = 0; i < dataToWrite.length-1; i++) {
+    stringToSend += dataToWrite[i].toString() + ",";
+  }
+  stringToSend += dataToWrite[dataToWrite.length-1].toString();
+  stringToSend += ">";
+  console.log(stringToSend);
+  stringToSend = stringToSend;
+  myPort.write(stringToSend);
 }
 
 function startWriting() {

@@ -116,7 +116,7 @@ class PixelGrid extends Component {
     const dataObject = {
       data: (this.state.serpentineMode ? serp : data)
         .map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
-      delay: 1000
+      delay: [250,250]
     };
     axios.request({
       method: 'post',
