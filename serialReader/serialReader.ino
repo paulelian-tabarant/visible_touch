@@ -47,7 +47,7 @@ void loop()
     }
     
     if(ended){
-        inString = inString + numLeds + numFrames + counter;
+        inString = inString;
         Serial.print(inString);
         inString = "";
         ended = false;

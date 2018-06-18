@@ -1,18 +1,37 @@
 var SerialPort = require('serialport'); // include the serialport library
 var http = require('http');
 
-// var myPort = new SerialPort("/dev/ttyACM0", {
-var myPort = new SerialPort("COM4", {
-  baudRate: 115200,
-  dataBits: 8,
-  parity: 'none',
-  stopBits: 1,
-  flowControl: false
-}); // open the port
-myPort.on('open', openPort); // called when the serial port opens
-var ready = false;
-console.log("blabla");
+var myPort;
 
+function connectArduino() {
+  SerialPort.list(function(err, ports) {
+    var allports = ports.length;
+    var count = 0;
+    var done = false
+    ports.forEach(function(port) {
+      count += 1;
+      pm = port['manufacturer'];
+      if (typeof pm !== 'undefined' && pm.includes('arduino')) {
+        console.log(port.comName.toString());
+        myPort = new SerialPort("COM4", {
+          baudRate: 115200,
+          dataBits: 8,
+          parity: 'none',
+          stopBits: 1,
+          flowControl: false
+        }); // open the port
+        myPort.on('open', openPort); // called when the serial port opens
+        return port.comName.toString();
+      }
+      if (count === allports && done === false) {
+         console.log('cant find arduino')
+      }
+    });
+  });
+}
+
+connectArduino();
+var ready = false;
 var shouldWrite = false;
 var dataToWrite;
 var delay = [];
@@ -32,7 +51,7 @@ function openPort() {
     shouldWrite = false;
   });
 
-  writeInterval = setInterval(queryArduino, 4000);
+  writeInterval = setInterval(queryArduino, 1000);
 }
 
 function queryArduino(){
