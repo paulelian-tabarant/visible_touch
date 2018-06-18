@@ -13,7 +13,7 @@ function connectArduino() {
       pm = port['manufacturer'];
       if (typeof pm !== 'undefined' && pm.includes('arduino')) {
         console.log(port.comName.toString());
-        myPort = new SerialPort("COM4", {
+        myPort = new SerialPort(port.comName.toString(), {
           baudRate: 115200,
           dataBits: 8,
           parity: 'none',
