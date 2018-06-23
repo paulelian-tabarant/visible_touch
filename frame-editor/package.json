@@ -6,14 +6,14 @@
     "axios": "^0.18.0",
     "js-file-download": "^0.4.1",
     "pixel-grid-react": "0.0.4",
-    "prop-types": "^15.6.1",
-    "react": "^16.4.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
     "react-color": "^2.14.1",
     "react-css": "0.0.2",
-    "react-dom": "^16.4.0",
+    "react-dom": "^16.4.1",
     "react-rangeslider": "^2.2.0",
     "react-scripts": "1.1.4",
-    "semantic-ui-css": "^2.3.1",
+    "semantic-ui-css": "^2.3.2",
     "semantic-ui-react": "^0.80.2"
   },
   "scripts": {

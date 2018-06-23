@@ -2,11 +2,11 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background-color: hsl(199, 48%, 69%);
+  background-color: white;
 }
 
 .ui.segment {
-  background-color: hsl(199, 70%, 69%);
+  background-color: #F1FAEE;
 }
 
 .grid-container:first-child {
@@ -23,7 +23,7 @@ body {
 }
 
 input {
-  background-color: hsl(199, 48%, 69%) !important;
+  background-color: white!important;
 }
 
 .layout-modal {
@@ -33,13 +33,13 @@ input {
 }
 
 .button {
-  background-color: rgb(26, 144, 165)!important;
+  background-color: #292F36!important;
 }
 
 .header {
-  color: rgb(18, 85, 97)!important;
+  color: #292F36 !important;
 }
 
 .value {
-  color: black!important;
+  color: #292F36 !important;
 }
