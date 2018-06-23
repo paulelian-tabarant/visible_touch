@@ -66,8 +66,8 @@ function queryArduino(){
 
 function writeData() {
   //var stringToSend = "<";
-  var stringToSend = numLeds.toString()+",";
-  console.log(delays);
+  var stringToSend = pWidth.toString()+",";
+  stringToSend += pHeight.toString() + ",";
   stringToSend += delays.length.toString() + ",";
   for(var i = 0; i < delays.length; i++){
     stringToSend += delays[i].toString() + ",";
@@ -104,7 +104,8 @@ var serv = http.createServer((req, res) => {
       obj = JSON.parse(body);
       dataToWrite = obj.data;
       delays = obj.delays;
-      numLeds = obj.leds;
+      pWidth = obj.width;
+      pHeight = obj.height;
       startWriting();
       res.write(JSON.stringify(obj));
       checkInterval = setInterval(checkWriting,200);

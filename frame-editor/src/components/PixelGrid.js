@@ -180,7 +180,8 @@ class PixelGrid extends Component {
       data: (this.state.serpentineMode ? serp : data)
         .map(str => Math.floor(Math.pow(parseInt(str, 10),2)/255)),
       delays: this.state.delays,
-      leds: this.props.layout.horizontal*this.props.layout.vertical,
+      width: this.props.layout.horizontal,
+      height: this.props.layout.vertical,
     };
     axios.request({
       method: 'post',
