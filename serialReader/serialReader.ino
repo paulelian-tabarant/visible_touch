@@ -2,9 +2,15 @@
 
 #define LED_PIN     5
 #define NUM_LEDS    100
-#define BRIGHTNESS  128
+#define LEDS_WIDTH 10
+#define LEDS_HEIGHT 6
+#define BRIGHTNESS  32
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
+int pWidth = 0;
+int pHeight = 0;
+int minWidth = 0;
+int minHeight = 0;
 int nextLed = 0;
 int currFrame = 0;
 int dataLength = 0;
@@ -24,6 +30,8 @@ void setup() {
     delay( 3000 ); // power-up safety delay
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(  BRIGHTNESS );
+    pWidth = 0;
+    pHeight = 0;
     Serial.begin(115200);
     while(!Serial){
       //wait for connection
@@ -38,10 +46,57 @@ void loop()
         if(millis() > time_now + delayFrames[currFrame]){
             time_now = millis();
             currFrame = (currFrame + 1) % numFrames;
-            for(int i=0; i<numLeds; i++){
-                leds[i] = ledData[nextLed];
-                nextLed = (nextLed + 1) % dataLength;
+            for(int i=0; i<minHeight; i++){
+                if(i%2==0){
+                    for(int j = 0; j < minWidth; j++){
+                        leds[i*LEDS_WIDTH + j] = ledData[nextLed];
+                        nextLed = (nextLed + 1) % dataLength;
+                    }
+                    for(int j = minWidth; j < LEDS_WIDTH; j++){
+                        leds[i*LEDS_WIDTH + j] = CRGB::Black;
+                    }
+                    for(int j = LEDS_WIDTH; j < pWidth; j++){
+                        nextLed = (nextLed + 1) % dataLength;
+                    }
+                }else{
+                    for(int j = pWidth; j > LEDS_WIDTH; j--){
+                        nextLed = (nextLed + 1) % dataLength;
+                    }
+                    for(int j = 0; j < LEDS_WIDTH - minWidth; j++){
+                        leds[i*LEDS_WIDTH + j] = CRGB::Black;
+                    }
+                    for(int j = LEDS_WIDTH - minWidth; j < LEDS_WIDTH; j++){
+                        leds[i*LEDS_WIDTH + j] = ledData[nextLed];
+                        nextLed = (nextLed + 1) % dataLength;
+                    }
+                }
+                /*for(int j=0; j<minWidth; j++){
+                    leds[i*LEDS_WIDTH + j] = ledData[nextLed];
+                    nextLed = (nextLed + 1) % dataLength;
+                }
+                for(int j=minWidth; j<LEDS_WIDTH; j++){
+                    leds[i*LEDS_WIDTH + j] = CRGB::Black;
+                }
+                for(int j = LEDS_WIDTH; j<pWidth; j++){
+                    nextLed = (nextLed + 1) % dataLength;
+                }*/
             }
+            for(int i = minHeight; i<LEDS_HEIGHT; i++){
+                for(int j=0; j<LEDS_WIDTH; j++){
+                    leds[i*LEDS_WIDTH + j] = CRGB::Black;
+                }
+            }
+            for(int i = LEDS_HEIGHT; i<pHeight; i++){
+                for(int j = 0; j < pWidth; j++){
+                    nextLed = (nextLed + 1) % dataLength;                    
+                }
+            }
+
+
+            // for(int i=0; i<numLeds; i++){
+            //     leds[i] = ledData[nextLed];
+            //     nextLed = (nextLed + 1) % dataLength;
+            // }
             FastLED.show();
         }
     }
@@ -71,14 +126,19 @@ void serialEvent(){
             inString += inChar;
             if(inChar == ','){
                 if(counter == 0){
-                    numLeds = currInt;
+                    pWidth = currInt;
+                    minWidth = min(pWidth,LEDS_WIDTH);
                 }else if(counter == 1){
+                    pHeight = currInt;
+                    minHeight = min(pHeight,LEDS_HEIGHT);
+                    numLeds = pHeight * pWidth;
+                }else if(counter == 2){
                     numFrames = currInt;
                     dataLength = numLeds * numFrames;
-                }else if(counter < numFrames + 2){
-                    delayFrames[counter - 2] = currInt;
+                }else if(counter < numFrames + 3){
+                    delayFrames[counter - 3] = currInt;
                 }else{
-                    int i = counter - 2 - numFrames;
+                    int i = counter - 3 - numFrames;
                     if(i%3 == 0){
                         ledData[i/3].r = currInt;
                     }else if(i%3 == 1){
