@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Divider, Form, Grid, Header, Segment } from 'semantic-ui-react';
+import { Divider, Form, Grid, Header, List, Segment } from 'semantic-ui-react';
 import MainComponent from './MainComponent';
 
 class SetupComponent extends Component {
@@ -107,6 +107,15 @@ class SetupComponent extends Component {
                     </Form.Group>
                     <Form.Button color='purple' content="Apply Changes" />
                   </Form>
+                </Segment>
+                <Segment>
+                  <Header as='h2'>Shortcuts</Header>
+                  <Divider />
+                  <List bulleted>
+                    <List.Item><b>CTRL+Z</b> to undo last drawing</List.Item>
+                    <List.Item><b>CRTL+C</b> | <b>CRTL+V</b> to copy paste frames</List.Item>
+                    <List.Item><b>⬅</b> | <b>➡</b> to navigate between frames</List.Item>
+                  </List>
                 </Segment>
               </Grid.Column>
               <Grid.Column width="12">

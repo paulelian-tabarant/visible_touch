@@ -207,7 +207,7 @@ class MainComponent extends Component {
         }
       }
       this.frameSliders.reRenderFrames(frames, delays);
-      this.pixelGrid.reRenderLayout(cellsArray, layout, frames);
+      this.pixelGrid.reRenderLayout(cellsArray, layout, frames, delays);
       this.setState({
         frames: frames,
         delays: delays,
