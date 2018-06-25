@@ -231,9 +231,15 @@ class PixelGrid extends Component {
   }
 
   handleUpload(obj) {
+    let previousCellsState = new Array(obj.delays.length);
+    for (let i=0; i < obj.delays.length; i++) {
+      previousCellsState[i] = new CellsBuffer();
+    }
     this.setState({
+      current: 1,
       delays: obj.delays,
       cellsArray: obj.cellsArray,
+      previousCellsState: previousCellsState,
     })
   }
 
@@ -275,12 +281,17 @@ class PixelGrid extends Component {
   }
 
   reRenderLayout(cellsArray, layout, frames, delays) {
+    let previousCellsState = new Array(frames);
+    for (let i=0; i < frames; i++) {
+      previousCellsState[i] = new CellsBuffer();
+    }
     this.setState({
       cellsArray: cellsArray,
       layout: layout,
       frames: frames,
       delays: delays,
       current: 1,
+      previousCellsState: previousCellsState,
     });
   }
 

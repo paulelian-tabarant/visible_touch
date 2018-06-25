@@ -64,6 +64,7 @@ class FrameSliders extends Component {
 
   handleUpload(delays) {
     this.setState({
+      current: 1,
       delays: delays,
       frames: delays.length,
     });
