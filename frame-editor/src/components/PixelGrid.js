@@ -273,6 +273,7 @@ class PixelGrid extends Component {
   handleFramePaste() {
     const { cellsArray, current, cellsBuffer } = this.state;
     let newFrames = cellsArray.slice();
+    if(cellsBuffer == null) return;
     newFrames[current-1] = cellsBuffer;
     this.setState({
       cellsArray: newFrames,
